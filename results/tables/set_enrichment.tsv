@@ -1,0 +1,101 @@
+dataset	outcome	set	n	n_hit	frac	genome_frac	odds_ratio	p	FDR
+NextGen	Pan-dependency	RWE: all	214	69	0.32243	0.0869323	4.99808	5.67566e-22	2.83783e-20
+NextGen	Pan-dependency	family: 2'-O-methylation / cap	21	6	0.285714	0.0894806	4.07024	0.00861511	0.0165675
+NextGen	Pan-dependency	family: A-to-I / inosine	10	1	0.1	0.0897019	1.12756	0.609426	0.69253
+NextGen	Pan-dependency	family: C-to-U	6	0	0	0.0897372	0	1	1
+NextGen	Pan-dependency	family: Pseudouridine	22	10	0.454545	0.089265	8.50216	7.7458e-06	2.27818e-05
+NextGen	Pan-dependency	family: Wobble U (mcm5s2U, tm5U, s2U)	18	10	0.555556	0.0892454	12.7563	7.33365e-07	2.44455e-06
+NextGen	Pan-dependency	family: ac4C	4	2	0.5	0.0896172	10.1586	0.0426857	0.0666964
+NextGen	Pan-dependency	family: m1A	9	2	0.222222	0.0896419	2.90157	0.190161	0.243964
+NextGen	Pan-dependency	family: m3C / m1G / m2G / m5U / D / other	22	2	0.0909091	0.0897061	1.01475	1	1
+NextGen	Pan-dependency	family: m5C/hm5C/f5C	18	5	0.277778	0.089521	3.91176	0.0183539	0.0339887
+NextGen	Pan-dependency	family: m6A/m6Am	48	17	0.354167	0.0890067	5.6128	4.14497e-07	1.59422e-06
+NextGen	Pan-dependency	family: m7G (internal/cap)	11	8	0.727273	0.0893211	27.1882	5.31696e-07	1.89891e-06
+NextGen	Pan-dependency	family: other	4	2	0.5	0.0896172	10.1586	0.0426857	0.0666964
+NextGen	Pan-dependency	family: t6A / i6A / Q / yW	21	4	0.190476	0.0895909	2.39102	0.113242	0.161775
+NextGen	Pan-dependency	role: reader	44	17	0.386364	0.088987	6.44589	9.4905e-08	5.2725e-07
+NextGen	Pan-dependency	role: reader-cofactor	3	1	0.333333	0.0896673	5.07617	0.245715	0.299652
+NextGen	Pan-dependency	role: writer	100	19	0.19	0.0891522	2.39653	0.00218707	0.00455639
+NextGen	Pan-dependency	role: writer-cofactor	51	29	0.568627	0.0883587	13.6003	7.49487e-18	9.36859e-17
+NextGen	Pan-dependency	role: other	7	3	0.428571	0.0895769	7.62269	0.01914	0.0341786
+NextGen	Pan-dependency	role: eraser	9	0	0	0.0897521	0	1	1
+NextGen	Pan-dependency	caveat_class: multifunctional RBP (mark-independent functions)	52	20	0.384615	0.0888607	6.40848	7.71751e-09	6.43126e-08
+NextGen	Pan-dependency	caveat_class: none	138	33	0.23913	0.0885633	3.23443	1.31193e-07	6.55967e-07
+NextGen	Pan-dependency	caveat_class: catalysis-independent essential role	13	7	0.538462	0.0893861	11.8853	4.87311e-05	0.000110753
+NextGen	Pan-dependency	caveat_class: shared cofactor (non-RWE partners)	11	9	0.818182	0.089266	45.9111	1.71541e-08	1.22529e-07
+NextGen	Pan-dependency	control genes (non-RNA MTases / IGFBPs / ALKBH)	31	0	0	0.089861	0	0.108495	0.159551
+NextGen	any dependency class	RWE: all	214	106	0.495327	0.205851	3.78644	1.61823e-20	4.04557e-19
+NextGen	any dependency class	family: 2'-O-methylation / cap	21	10	0.47619	0.208954	3.44159	0.00570544	0.0114109
+NextGen	any dependency class	family: A-to-I / inosine	10	5	0.5	0.209102	3.78235	0.0392655	0.0654424
+NextGen	any dependency class	family: C-to-U	6	1	0.166667	0.209277	0.755673	1	1
+NextGen	any dependency class	family: Pseudouridine	22	14	0.636364	0.208745	6.63345	1.72568e-05	4.54127e-05
+NextGen	any dependency class	family: Wobble U (mcm5s2U, tm5U, s2U)	18	14	0.777778	0.208699	13.2706	3.90453e-07	1.59422e-06
+NextGen	any dependency class	family: ac4C	4	2	0.5	0.209199	3.78015	0.195172	0.243964
+NextGen	any dependency class	family: m1A	9	5	0.555556	0.209091	4.72826	0.0236476	0.0407718
+NextGen	any dependency class	family: m3C / m1G / m2G / m5U / D / other	22	4	0.181818	0.209296	0.839539	1	1
+NextGen	any dependency class	family: m5C/hm5C/f5C	18	7	0.388889	0.209084	2.40721	0.0779633	0.118126
+NextGen	any dependency class	family: m6A/m6Am	48	26	0.541667	0.208382	4.48959	4.14408e-07	1.59422e-06
+NextGen	any dependency class	family: m7G (internal/cap)	11	9	0.818182	0.208894	17.0421	2.77135e-05	6.59845e-05
+NextGen	any dependency class	family: other	4	2	0.5	0.209199	3.78015	0.195172	0.243964
+NextGen	any dependency class	family: t6A / i6A / Q / yW	21	7	0.333333	0.209119	1.89098	0.178099	0.240675
+NextGen	any dependency class	role: reader	44	23	0.522727	0.208501	4.15767	4.32872e-06	1.35273e-05
+NextGen	any dependency class	role: reader-cofactor	3	1	0.333333	0.209242	1.88958	0.505601	0.587908
+NextGen	any dependency class	role: writer	100	38	0.38	0.208317	2.32926	9.93912e-05	0.000216068
+NextGen	any dependency class	role: writer-cofactor	51	40	0.784314	0.207643	13.8762	2.26283e-18	3.77139e-17
+NextGen	any dependency class	role: other	7	3	0.428571	0.209178	2.83546	0.164292	0.228183
+NextGen	any dependency class	role: eraser	9	1	0.111111	0.209311	0.472197	0.695194	0.772438
+NextGen	any dependency class	caveat_class: multifunctional RBP (mark-independent functions)	52	25	0.480769	0.208483	3.51533	1.64939e-05	4.54127e-05
+NextGen	any dependency class	caveat_class: none	138	60	0.434783	0.207536	2.93727	2.42917e-09	2.42917e-08
+NextGen	any dependency class	caveat_class: catalysis-independent essential role	13	12	0.923077	0.208751	45.4847	7.29988e-08	4.56243e-07
+NextGen	any dependency class	caveat_class: shared cofactor (non-RWE partners)	11	9	0.818182	0.208894	17.0421	2.77135e-05	6.59845e-05
+NextGen	any dependency class	control genes (non-RNA MTases / IGFBPs / ALKBH)	31	4	0.129032	0.2094	0.559341	0.376762	0.448526
+DepMap2D	Pan-dependency	RWE: all	214	64	0.299065	0.0845361	4.62049	3.05548e-19	5.09246e-18
+DepMap2D	Pan-dependency	family: 2'-O-methylation / cap	21	6	0.285714	0.0868343	4.20648	0.00745979	0.0149196
+DepMap2D	Pan-dependency	family: A-to-I / inosine	10	1	0.1	0.0870571	1.16519	0.597932	0.664369
+DepMap2D	Pan-dependency	family: C-to-U	6	0	0	0.087093	0	1	1
+DepMap2D	Pan-dependency	family: Pseudouridine	22	7	0.318182	0.0867839	4.91067	0.00197889	0.00449749
+DepMap2D	Pan-dependency	family: Wobble U (mcm5s2U, tm5U, s2U)	18	10	0.555556	0.0865994	13.1843	5.54742e-07	1.98122e-06
+DepMap2D	Pan-dependency	family: ac4C	4	2	0.5	0.0869733	10.4978	0.0403561	0.0720644
+DepMap2D	Pan-dependency	family: m1A	9	0	0	0.0871074	0	1	1
+DepMap2D	Pan-dependency	family: m3C / m1G / m2G / m5U / D / other	22	3	0.136364	0.0870045	1.65689	0.433787	0.504404
+DepMap2D	Pan-dependency	family: m5C/hm5C/f5C	18	4	0.222222	0.0869302	3.001	0.065358	0.105416
+DepMap2D	Pan-dependency	family: m6A/m6Am	48	18	0.375	0.0863011	6.3524	4.33246e-08	2.40692e-07
+DepMap2D	Pan-dependency	family: m7G (internal/cap)	11	8	0.727273	0.0866762	28.0992	4.21538e-07	1.62592e-06
+DepMap2D	Pan-dependency	family: other	4	2	0.5	0.0869733	10.4978	0.0403561	0.0720644
+DepMap2D	Pan-dependency	family: t6A / i6A / Q / yW	21	3	0.142857	0.0869997	1.74905	0.422078	0.502474
+DepMap2D	Pan-dependency	role: reader	44	18	0.409091	0.0862821	7.33146	8.55916e-09	6.11369e-08
+DepMap2D	Pan-dependency	role: reader-cofactor	3	1	0.333333	0.0870236	5.24557	0.239124	0.330852
+DepMap2D	Pan-dependency	role: writer	100	18	0.18	0.0865496	2.31675	0.00346839	0.00734948
+DepMap2D	Pan-dependency	role: writer-cofactor	51	24	0.470588	0.0859841	9.44894	6.92229e-13	8.65287e-12
+DepMap2D	Pan-dependency	role: other	7	3	0.428571	0.0869326	7.87738	0.0176434	0.0339296
+DepMap2D	Pan-dependency	role: eraser	9	0	0	0.0871074	0	1	1
+DepMap2D	Pan-dependency	caveat_class: multifunctional RBP (mark-independent functions)	52	21	0.403846	0.0861545	7.18542	6.5516e-10	5.63025e-09
+DepMap2D	Pan-dependency	caveat_class: none	138	30	0.217391	0.0860663	2.94971	2.18998e-06	6.93148e-06
+DepMap2D	Pan-dependency	caveat_class: catalysis-independent essential role	13	5	0.384615	0.0868511	6.57122	0.00352775	0.00734948
+DepMap2D	Pan-dependency	caveat_class: shared cofactor (non-RWE partners)	11	8	0.727273	0.0866762	28.0992	4.21538e-07	1.62592e-06
+DepMap2D	Pan-dependency	control genes (non-RNA MTases / IGFBPs / ALKBH)	31	0	0	0.0872132	0	0.107367	0.157893
+DepMap2D	any dependency class	RWE: all	214	120	0.560748	0.250432	3.82098	1.39024e-21	6.9512e-20
+DepMap2D	any dependency class	family: 2'-O-methylation / cap	21	9	0.428571	0.253887	2.20407	0.0786813	0.119214
+DepMap2D	any dependency class	family: A-to-I / inosine	10	4	0.4	0.254008	1.95792	0.286979	0.367922
+DepMap2D	any dependency class	family: C-to-U	6	2	0.333333	0.254063	1.46802	0.647945	0.704288
+DepMap2D	any dependency class	family: Pseudouridine	22	15	0.681818	0.25357	6.30789	3.00552e-05	7.51379e-05
+DepMap2D	any dependency class	family: Wobble U (mcm5s2U, tm5U, s2U)	18	15	0.833333	0.253514	14.7228	4.22738e-07	1.62592e-06
+DepMap2D	any dependency class	family: ac4C	4	3	0.75	0.25398	8.81197	0.053093	0.0884883
+DepMap2D	any dependency class	family: m1A	9	4	0.444444	0.253994	2.34967	0.24483	0.330852
+DepMap2D	any dependency class	family: m3C / m1G / m2G / m5U / D / other	22	10	0.454545	0.253846	2.4495	0.0461463	0.0795625
+DepMap2D	any dependency class	family: m5C/hm5C/f5C	18	7	0.388889	0.253955	1.86945	0.184818	0.264025
+DepMap2D	any dependency class	family: m6A/m6Am	48	30	0.625	0.253106	4.91819	6.25129e-08	3.12564e-07
+DepMap2D	any dependency class	family: m7G (internal/cap)	11	10	0.909091	0.253692	29.4179	9.42389e-06	2.61775e-05
+DepMap2D	any dependency class	family: other	4	2	0.5	0.254035	2.93647	0.268626	0.353455
+DepMap2D	any dependency class	family: t6A / i6A / Q / yW	21	9	0.428571	0.253887	2.20407	0.0786813	0.119214
+DepMap2D	any dependency class	role: reader	44	26	0.590909	0.253271	4.25872	2.21807e-06	6.93148e-06
+DepMap2D	any dependency class	role: reader-cofactor	3	1	0.333333	0.254076	1.46792	1	1
+DepMap2D	any dependency class	role: writer	100	45	0.45	0.253004	2.41569	2.39932e-05	6.31401e-05
+DepMap2D	any dependency class	role: writer-cofactor	51	44	0.862745	0.252375	18.6206	9.02674e-20	2.25668e-18
+DepMap2D	any dependency class	role: other	7	3	0.428571	0.254022	2.2025	0.380521	0.46405
+DepMap2D	any dependency class	role: eraser	9	1	0.111111	0.25416	0.366817	0.463953	0.52722
+DepMap2D	any dependency class	caveat_class: multifunctional RBP (mark-independent functions)	52	29	0.557692	0.253217	3.71853	3.22885e-06	9.49663e-06
+DepMap2D	any dependency class	caveat_class: none	138	69	0.5	0.252206	2.96502	6.7563e-10	5.63025e-09
+DepMap2D	any dependency class	caveat_class: catalysis-independent essential role	13	13	1	0.253555	inf	1.8169e-08	1.13556e-07
+DepMap2D	any dependency class	caveat_class: shared cofactor (non-RWE partners)	11	9	0.818182	0.253747	13.2342	0.000143855	0.000342513
+DepMap2D	any dependency class	control genes (non-RNA MTases / IGFBPs / ALKBH)	31	5	0.16129	0.254248	0.564072	0.30336	0.3792

@@ -1,0 +1,129 @@
+Dependency	Biomarker	NextGenPearsonR	NextGenPValue	NextGenN	TraditionalPearsonR	NextGenDepClass	FDR	Significant	type	BiomarkerVariance	symbol	biomarker_symbol
+ABCF1 (23)	ABCF1 (23)	-0.191606	0.0205151	146	0.203669	Pan-dependency	0.165723	False	expression addiction (own expression)		ABCF1	ABCF1
+ADAR (103)	ADAR (103)	-0.178907	0.0307245	146	-0.0547155	Strongly Selective	0.209969	False	expression addiction (own expression)		ADAR	ADAR
+ADAT2 (134637)	ADAT2 (134637)	-0.0671177	0.420864	146	0.0181236	High Variance	0.742043	False	expression addiction (own expression)		ADAT2	ADAT2
+ADAT3 (113179)	ADAT3 (113179)	-0.108187	0.193666	146	0.048259	Pan-dependency	0.532476	False	expression addiction (own expression)		ADAT3	ADAT3
+ALKBH5 (54890)	ALKBH5 (54890)	-0.124559	0.134146	146	-0.112794	Strongly Selective	0.444727	False	expression addiction (own expression)		ALKBH5	ALKBH5
+ALYREF (10189)	ALYREF (10189)	0.0194919	0.815358	146	0.0556237	Pan-dependency	0.937395	False	expression addiction (own expression)		ALYREF	ALYREF
+BUD23 (114049)	BUD23 (114049)	0.107698	0.195701	146	0.0493091	Pan-dependency	0.534576	False	expression addiction (own expression)		BUD23	BUD23
+CBLL1 (79872)	CBLL1 (79872)	-0.182623	0.0273658	146	0.065277	Strongly Selective	0.196904	False	expression addiction (own expression)		CBLL1	CBLL1
+CENPA (1058)	CENPA (1058)	0.0804685	0.334287	146	0.0521505	Pan-dependency	0.672736	False	expression addiction (own expression)		CENPA	CENPA
+CMTR1 (23070)	CMTR1 (23070)	0.0146955	0.860255	146	-0.0301045	Pan-dependency	0.957949	False	expression addiction (own expression)		CMTR1	CMTR1
+CMTR2 (55783)	CMTR2 (55783)	0.0512838	0.538725	146	-0.02143	High Variance	0.81945	False	expression addiction (own expression)		CMTR2	CMTR2
+CTU2 (348180)	CTU2 (348180)	0.172309	0.0375528	146	0.0722292	Pan-dependency	0.235	False	expression addiction (own expression)		CTU2	CTU2
+DIMT1 (27292)	DIMT1 (27292)	-0.259784	0.00154257	146	0.0674272	High Variance	0.0356108	False	expression addiction (own expression)		DIMT1	DIMT1
+DKC1 (1736)	DKC1 (1736)	-0.169955	0.0402802	146	-0.031055	Pan-dependency	0.243612	False	expression addiction (own expression)		DKC1	DKC1
+DPH3 (285381)	DPH3 (285381)	-0.22726	0.00580525	146	-0.128788	Pan-dependency	0.0772527	False	expression addiction (own expression)		DPH3	DPH3
+EIF3A (8661)	EIF3A (8661)	0.00950268	0.909367	146	0.201161	Pan-dependency	0.970797	False	expression addiction (own expression)		EIF3A	EIF3A
+EIF3H (8667)	EIF3H (8667)	-0.0105611	0.899323	146	0.0583933	Pan-dependency	0.967981	False	expression addiction (own expression)		EIF3H	EIF3H
+EIF4E (1977)	EIF4E (1977)	-0.0599435	0.472313	146	0.0536996	Pan-dependency	0.780863	False	expression addiction (own expression)		EIF4E	EIF4E
+ELAVL1 (1994)	ELAVL1 (1994)	0.0114296	0.891093	146	-0.123775	Strongly Selective	0.965177	False	expression addiction (own expression)		ELAVL1	ELAVL1
+ELP1 (8518)	ELP1 (8518)	0.0269183	0.747061	146	-0.0744056	Pan-dependency	0.912084	False	expression addiction (own expression)		ELP1	ELP1
+ELP2 (55250)	ELP2 (55250)	-0.0190033	0.819907	146	-0.00882126	High Variance	0.939482	False	expression addiction (own expression)		ELP2	ELP2
+ELP3 (55140)	ELP3 (55140)	0.0951543	0.253261	146	-0.0304446	Pan-dependency	0.599278	False	expression addiction (own expression)		ELP3	ELP3
+ELP4 (26610)	ELP4 (26610)	0.0918143	0.270379	146	0.107967	High Variance	0.621758	False	expression addiction (own expression)		ELP4	ELP4
+ELP5 (23587)	ELP5 (23587)	0.204793	0.0131533	146	-0.154695	Pan-dependency	0.128347	False	expression addiction (own expression)		ELP5	ELP5
+ELP6 (54859)	ELP6 (54859)	0.0786192	0.345551	146	-0.16527	Pan-dependency	0.682093	False	expression addiction (own expression)		ELP6	ELP6
+EMG1 (10436)	EMG1 (10436)	-0.0196504	0.813884	146	-0.0906663	High Variance	0.937395	False	expression addiction (own expression)		EMG1	EMG1
+ENDOV (284131)	ENDOV (284131)	0.14897	0.0727231	146	-0.049287	Strongly Selective	0.335359	False	expression addiction (own expression)		ENDOV	ENDOV
+FBL (2091)	FBL (2091)	-0.0726656	0.383412	146	-0.0568808	Pan-dependency	0.710174	False	expression addiction (own expression)		FBL	FBL
+FTSJ3 (117246)	FTSJ3 (117246)	-0.126693	0.127553	146	0.0624702	Pan-dependency	0.431526	False	expression addiction (own expression)		FTSJ3	FTSJ3
+GAR1 (54433)	GAR1 (54433)	0.177658	0.0319289	146	0.10052	Pan-dependency	0.215477	False	expression addiction (own expression)		GAR1	GAR1
+HENMT1 (113802)	HENMT1 (113802)	-0.20215	0.0144089	146	-0.0233768	High Variance	0.13503	False	expression addiction (own expression)		HENMT1	HENMT1
+HNRNPA2B1 (3181)	HNRNPA2B1 (3181)	-0.309445	0.00014434	146	-0.118966	High Variance	0.00709962	False	expression addiction (own expression)		HNRNPA2B1	HNRNPA2B1
+HNRNPC (3183)	HNRNPC (3183)	0.0575615	0.490124	146	0.00390744	Pan-dependency	0.79402	False	expression addiction (own expression)		HNRNPC	HNRNPC
+HSD17B10 (3028)	HSD17B10 (3028)	0.114136	0.170144	146	-0.0567104	Pan-dependency	0.504435	False	expression addiction (own expression)		HSD17B10	HSD17B10
+KTI12 (112970)	KTI12 (112970)	-0.124184	0.13533	146	-0.0540454	Pan-dependency	0.447084	False	expression addiction (own expression)		KTI12	KTI12
+LAGE3 (8270)	LAGE3 (8270)	0.230621	0.0051022	146	0.143066	High Variance	0.0718817	False	expression addiction (own expression)		LAGE3	LAGE3
+LCMT2 (9836)	LCMT2 (9836)	0.0556548	0.504634	146	-0.00614187	Strongly Selective	0.801739	False	expression addiction (own expression)		LCMT2	LCMT2
+LRPPRC (10128)	LRPPRC (10128)	-0.0742118	0.373345	146	-0.141125	Pan-dependency	0.701829	False	expression addiction (own expression)		LRPPRC	LRPPRC
+MEPCE (56257)	MEPCE (56257)	0.0457124	0.583772	146	-0.000839167	Pan-dependency	0.840402	False	expression addiction (own expression)		MEPCE	MEPCE
+METTL1 (4234)	METTL1 (4234)	0.00385505	0.963166	146	0.00857751	Pan-dependency	0.990103	False	expression addiction (own expression)		METTL1	METTL1
+METTL14 (57721)	METTL14 (57721)	0.0611783	0.463221	146	-0.0101657	Pan-dependency	0.774131	False	expression addiction (own expression)		METTL14	METTL14
+METTL16 (79066)	METTL16 (79066)	0.0568655	0.495394	146	0.0403353	Pan-dependency	0.7955	False	expression addiction (own expression)		METTL16	METTL16
+METTL17 (64745)	METTL17 (64745)	0.0882097	0.289716	146	-0.191694	Pan-dependency	0.634672	False	expression addiction (own expression)		METTL17	METTL17
+METTL3 (56339)	METTL3 (56339)	0.0704455	0.39815	146	0.0831479	Pan-dependency	0.721933	False	expression addiction (own expression)		METTL3	METTL3
+MOCS3 (27304)	MOCS3 (27304)	0.0441211	0.59695	146	-0.00654001	Pan-dependency	0.846779	False	expression addiction (own expression)		MOCS3	MOCS3
+MRM2 (29960)	MRM2 (29960)	0.0526618	0.527855	146	-0.0797408	High Variance	0.8147	False	expression addiction (own expression)		MRM2	MRM2
+MRM3 (55178)	MRM3 (55178)	0.139873	0.0922096	146	-0.188312	High Variance	0.375963	False	expression addiction (own expression)		MRM3	MRM3
+MTERF4 (130916)	MTERF4 (130916)	0.212326	0.0100852	146	-0.0686679	High Variance	0.110036	False	expression addiction (own expression)		MTERF4	MTERF4
+MTO1 (25821)	MTO1 (25821)	0.0833345	0.317301	146	-0.0871968	Strongly Selective	0.659693	False	expression addiction (own expression)		MTO1	MTO1
+MYBBP1A (10514)	MYBBP1A (10514)	-0.0660228	0.428499	146	0.0155292	Pan-dependency	0.745988	False	expression addiction (own expression)		MYBBP1A	MYBBP1A
+NAF1 (92345)	NAF1 (92345)	0.167973	0.0427025	146	0.0872601	High Variance	0.251433	False	expression addiction (own expression)		NAF1	NAF1
+NAT10 (55226)	NAT10 (55226)	-0.0688296	0.409087	146	-0.00687095	Pan-dependency	0.731257	False	expression addiction (own expression)		NAT10	NAT10
+NCBP1 (4686)	NCBP1 (4686)	-0.00935425	0.910777	146	0.048465	Pan-dependency	0.970797	False	expression addiction (own expression)		NCBP1	NCBP1
+NCBP2 (22916)	NCBP2 (22916)	0.0397698	0.633648	146	0.0647254	Pan-dependency	0.865737	False	expression addiction (own expression)		NCBP2	NCBP2
+NFS1 (9054)	NFS1 (9054)	0.0451778	0.588184	146	-0.0192277	Pan-dependency	0.841705	False	expression addiction (own expression)		NFS1	NFS1
+NHP2 (55651)	NHP2 (55651)	0.106485	0.200813	146	-0.0343642	Pan-dependency	0.538822	False	expression addiction (own expression)		NHP2	NHP2
+NOP10 (55505)	NOP10 (55505)	-0.110109	0.18582	146	-0.204183	Pan-dependency	0.523916	False	expression addiction (own expression)		NOP10	NOP10
+NOP2 (4839)	NOP2 (4839)	0.00296038	0.971711	146	0.092948	Pan-dependency	0.993284	False	expression addiction (own expression)		NOP2	NOP2
+NOP56 (10528)	NOP56 (10528)	-0.0203878	0.807034	146	0.00985879	Pan-dependency	0.93444	False	expression addiction (own expression)		NOP56	NOP56
+NOP58 (51602)	NOP58 (51602)	-0.0865025	0.299188	146	-0.00691696	Pan-dependency	0.642863	False	expression addiction (own expression)		NOP58	NOP58
+NSUN4 (387338)	NSUN4 (387338)	0.0836756	0.315317	146	-0.107294	Pan-dependency	0.657011	False	expression addiction (own expression)		NSUN4	NSUN4
+NSUN6 (221078)	NSUN6 (221078)	-0.0479792	0.565235	146	-0.0186938	Strongly Selective	0.833326	False	expression addiction (own expression)		NSUN6	NSUN6
+OSGEP (55644)	OSGEP (55644)	-5.16e-05	0.999507	146	0.0612385	Pan-dependency	0.999507	False	expression addiction (own expression)		OSGEP	OSGEP
+PABPC1 (26986)	PABPC1 (26986)	-0.0161597	0.846495	146	-0.100284	Pan-dependency	0.951271	False	expression addiction (own expression)		PABPC1	PABPC1
+PCF11 (51585)	PCF11 (51585)	-0.133986	0.106893	146	0.139656	Pan-dependency	0.401088	False	expression addiction (own expression)		PCF11	PCF11
+PFN1 (5216)	PFN1 (5216)	-0.00122629	0.98832	145	-0.103167	Pan-dependency	0.997777	False	expression addiction (own expression)		PFN1	PFN1
+PRRC2A (7916)	PRRC2A (7916)	-0.108929	0.190608	146	-0.198736	High Variance	0.528692	False	expression addiction (own expression)		PRRC2A	PRRC2A
+PUS7 (54517)	PUS7 (54517)	-0.141287	0.0889339	146	-0.0148975	Strongly Selective	0.368788	False	expression addiction (own expression)		PUS7	PUS7
+PUSL1 (126789)	PUSL1 (126789)	-0.132471	0.110951	146	-0.114177	Strongly Selective	0.404609	False	expression addiction (own expression)		PUSL1	PUSL1
+RBM15 (64783)	RBM15 (64783)	0.0876832	0.292615	146	-0.0748601	High Variance	0.636817	False	expression addiction (own expression)		RBM15	RBM15
+RBM33 (155435)	RBM33 (155435)	0.0661469	0.427629	146	0.0809563	High Variance	0.745607	False	expression addiction (own expression)		RBM33	RBM33
+RBM47 (54502)	RBM47 (54502)	-0.295176	0.000298154	146	-0.315431	Strongly Selective	0.0126833	False	expression addiction (own expression)		RBM47	RBM47
+RBMX (27316)	RBMX (27316)	-0.136866	0.0994957	146	0.0851284	Pan-dependency	0.388341	False	expression addiction (own expression)		RBMX	RBMX
+RNMT (8731)	RNMT (8731)	0.236256	0.00409292	146	0.0645252	Pan-dependency	0.0631477	False	expression addiction (own expression)		RNMT	RNMT
+RPUSD3 (285367)	RPUSD3 (285367)	-0.0552619	0.507651	146	-0.0255306	Pan-dependency	0.802164	False	expression addiction (own expression)		RPUSD3	RPUSD3
+RPUSD4 (84881)	RPUSD4 (84881)	-0.00680479	0.935031	146	-0.0752528	Pan-dependency	0.98009	False	expression addiction (own expression)		RPUSD4	RPUSD4
+SARS1 (6301)	SARS1 (6301)	0.21125	0.0104805	146	0.00389846	Pan-dependency	0.11284	False	expression addiction (own expression)		SARS1	SARS1
+SARS2 (54938)	SARS2 (54938)	0.0119589	0.886082	146	-0.097953	Pan-dependency	0.964828	False	expression addiction (own expression)		SARS2	SARS2
+SERBP1 (26135)	SERBP1 (26135)	0.000833692	0.992032	146	-0.105509	Pan-dependency	0.997777	False	expression addiction (own expression)		SERBP1	SERBP1
+SHQ1 (55164)	SHQ1 (55164)	-0.0260643	0.754826	146	-0.13229	Pan-dependency	0.916741	False	expression addiction (own expression)		SHQ1	SHQ1
+SNU13 (4809)	SNU13 (4809)	0.0341501	0.682385	146	-0.0240103	Pan-dependency	0.88811	False	expression addiction (own expression)		SNU13	SNU13
+SNUPN (10073)	SNUPN (10073)	0.0166476	0.84192	146	0.16318	Pan-dependency	0.948946	False	expression addiction (own expression)		SNUPN	SNUPN
+SRSF2 (6427)	SRSF2 (6427)	0.0835363	0.316126	146	0.00204335	Pan-dependency	0.657902	False	expression addiction (own expression)		SRSF2	SRSF2
+TARDBP (23435)	TARDBP (23435)	0.0845024	0.310542	146	-0.0813663	Pan-dependency	0.651104	False	expression addiction (own expression)		TARDBP	TARDBP
+TFB1M (51106)	TFB1M (51106)	-0.109701	0.187465	146	-0.106919	High Variance	0.526126	False	expression addiction (own expression)		TFB1M	TFB1M
+TGS1 (96764)	TGS1 (96764)	-0.000766557	0.992673	146	0.197057	Pan-dependency	0.997854	False	expression addiction (own expression)		TGS1	TGS1
+TP53RK (112858)	TP53RK (112858)	0.0593499	0.476718	146	0.0403446	Pan-dependency	0.782602	False	expression addiction (own expression)		TP53RK	TP53RK
+TPRKB (51002)	TPRKB (51002)	-0.0858521	0.30285	146	0.00717077	Pan-dependency	0.646776	False	expression addiction (own expression)		TPRKB	TPRKB
+TRIT1 (54802)	TRIT1 (54802)	0.0617037	0.459382	146	-0.00386863	High Variance	0.77081	False	expression addiction (own expression)		TRIT1	TRIT1
+TRMT10B (158234)	TRMT10B (158234)	0.0355277	0.670307	146	0.0223525	Strongly Selective	0.882695	False	expression addiction (own expression)		TRMT10B	TRMT10B
+TRMT10C (54931)	TRMT10C (54931)	-0.0194682	0.815578	146	-0.119319	Pan-dependency	0.937395	False	expression addiction (own expression)		TRMT10C	TRMT10C
+TRMT112 (51504)	TRMT112 (51504)	-0.0356392	0.669332	146	-0.054648	Pan-dependency	0.88208	False	expression addiction (own expression)		TRMT112	TRMT112
+TRMT5 (57570)	TRMT5 (57570)	0.125767	0.130381	146	0.0577048	High Variance	0.43761	False	expression addiction (own expression)		TRMT5	TRMT5
+TRMT6 (51605)	TRMT6 (51605)	0.149047	0.0725739	146	0.05293	High Variance	0.335359	False	expression addiction (own expression)		TRMT6	TRMT6
+TRMT61A (115708)	TRMT61A (115708)	0.074726	0.370033	146	0.0786707	Strongly Selective	0.700123	False	expression addiction (own expression)		TRMT61A	TRMT61A
+TRMU (55687)	TRMU (55687)	0.135472	0.103023	146	0.00919965	Strongly Selective	0.392793	False	expression addiction (own expression)		TRMU	TRMU
+TRUB2 (26995)	TRUB2 (26995)	0.0893356	0.283579	146	-0.118549	Pan-dependency	0.630435	False	expression addiction (own expression)		TRUB2	TRUB2
+URM1 (81605)	URM1 (81605)	0.066948	0.422042	146	-0.0897553	Pan-dependency	0.742386	False	expression addiction (own expression)		URM1	URM1
+VIRMA (25962)	VIRMA (25962)	-0.131253	0.114304	146	0.0872085	Pan-dependency	0.409699	False	expression addiction (own expression)		VIRMA	VIRMA
+WDR4 (10785)	WDR4 (10785)	-0.0131196	0.875112	146	0.118654	High Variance	0.963268	False	expression addiction (own expression)		WDR4	WDR4
+WTAP (9589)	WTAP (9589)	0.0993156	0.232998	146	0.159424	Pan-dependency	0.574305	False	expression addiction (own expression)		WTAP	WTAP
+YBX1 (4904)	YBX1 (4904)	-0.224792	0.00637541	146	-0.139125	Pan-dependency	0.0809976	False	expression addiction (own expression)		YBX1	YBX1
+YRDC (79693)	YRDC (79693)	-0.00411371	0.960697	146	0.0913288	Pan-dependency	0.98966	False	expression addiction (own expression)		YRDC	YRDC
+YTHDC1 (91746)	YTHDC1 (91746)	0.167984	0.0426889	146	0.105055	Pan-dependency	0.251433	False	expression addiction (own expression)		YTHDC1	YTHDC1
+YTHDF2 (51441)	YTHDF2 (51441)	-0.203368	0.0138179	146	-0.0657916	High Variance	0.130786	False	expression addiction (own expression)		YTHDF2	YTHDF2
+ZC3H13 (23091)	ZC3H13 (23091)	0.0396081	0.63503	146	0.25892	High Variance	0.86591	False	expression addiction (own expression)		ZC3H13	ZC3H13
+CENPA (1058)	H3-7 (440686)	0.0177177	0.831904	146	0.106782	Pan-dependency	0.954512	False	paralog expression	1.59974	CENPA	H3-7
+CENPA (1058)	H3C10 (8357)	0.0115084	0.890346	146	0.00659614	Pan-dependency	0.976302	False	paralog expression	1.54461	CENPA	H3C10
+ELAVL1 (1994)	ELAVL2 (1993)	-0.0239941	0.773752	146	0.0224678	Strongly Selective	0.935253	False	paralog expression	1.59656	ELAVL1	ELAVL2
+ELAVL1 (1994)	ELAVL3 (1995)	0.023312	0.780017	146	-0.0601768	Strongly Selective	0.938052	False	paralog expression	1.82642	ELAVL1	ELAVL3
+ELAVL1 (1994)	RBMS3 (27303)	-0.0199681	0.810931	146	-0.139701	Strongly Selective	0.948026	False	paralog expression	1.02489	ELAVL1	RBMS3
+ELAVL1 (1994)	ELAVL4 (1996)	-0.0184781	0.824803	146	-0.0397458	Strongly Selective	0.952876	False	paralog expression	1.6616	ELAVL1	ELAVL4
+ELAVL1 (1994)	RBMS1 (5937)	-0.00948086	0.909574	146	-0.0861933	Strongly Selective	0.979543	False	paralog expression	2.01223	ELAVL1	RBMS1
+HNRNPA2B1 (3181)	MSI1 (4440)	-0.465379	3.25e-09	146	-0.105791	High Variance	5.12823e-07	False	paralog expression	3.15809	HNRNPA2B1	MSI1
+HNRNPA2B1 (3181)	MSI2 (124540)	-0.395297	7.89e-07	146	-0.0213305	High Variance	5.65192e-05	False	paralog expression	1.33503	HNRNPA2B1	MSI2
+HSD17B10 (3028)	HSD17B8 (7923)	-0.233947	0.00448261	146	-0.0703996	Pan-dependency	0.0482263	False	paralog expression	1.21911	HSD17B10	HSD17B8
+HSD17B10 (3028)	RDH5 (5959)	0.124458	0.134464	146	0.0649852	Pan-dependency	0.418762	False	paralog expression	1.34313	HSD17B10	RDH5
+LAGE3 (8270)	CTAG2 (30848)	-0.146035	0.0786086	146	0.0589474	High Variance	0.30681	False	paralog expression	1.6525	LAGE3	CTAG2
+PABPC1 (26986)	RBMS1 (5937)	0.198283	0.0164334	146	0.074684	Pan-dependency	0.11809	False	paralog expression	2.01223	PABPC1	RBMS1
+PABPC1 (26986)	PABPC1L (80336)	-0.18717	0.023687	146	0.0450036	Pan-dependency	0.149008	False	paralog expression	1.83935	PABPC1	PABPC1L
+PABPC1 (26986)	ELAVL3 (1995)	0.132693	0.11035	146	-0.0170772	Pan-dependency	0.370147	False	paralog expression	1.82642	PABPC1	ELAVL3
+PABPC1 (26986)	RBM24 (221662)	0.113308	0.173283	146	0.00149315	Pan-dependency	0.475081	False	paralog expression	1.19852	PABPC1	RBM24
+PABPC1 (26986)	RBMS3 (27303)	0.092177	0.268483	146	0.0399114	Pan-dependency	0.585345	False	paralog expression	1.02489	PABPC1	RBMS3
+PABPC1 (26986)	ELAVL2 (1993)	0.062345	0.45472	146	-0.0195481	Pan-dependency	0.742252	False	paralog expression	1.59656	PABPC1	ELAVL2
+PFN1 (5216)	PFN2 (5217)	0.507649	7.18e-11	145	0.40699	Pan-dependency	1.94219e-08	True	paralog expression	3.08566	PFN1	PFN2
+RBM47 (54502)	A1CF (29974)	0.0254036	0.760851	146	-0.17973	Strongly Selective	0.930366	False	paralog expression	1.41977	RBM47	A1CF
+SRSF2 (6427)	SRSF12 (135295)	0.305678	0.000175439	146	0.00552711	Pan-dependency	0.00427679	True	paralog expression	1.637	SRSF2	SRSF12
+YBX1 (4904)	YBX2 (51087)	0.119918	0.149379	146	-0.0161616	Pan-dependency	0.439207	False	paralog expression	1.82737	YBX1	YBX2

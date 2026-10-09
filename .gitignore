@@ -1,0 +1,12 @@
+# raw inputs (large, downloaded separately - see data/README.md)
+data/raw/
+# re-creatable intermediates
+results/intermediate/
+# python / editor / OS
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.DS_Store
+.vscode/
+.idea/
+*.swp

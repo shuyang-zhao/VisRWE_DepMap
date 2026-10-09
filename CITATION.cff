@@ -1,0 +1,51 @@
+cff-version: 1.2.0
+message: "If you use this resource, please cite it as below, together with the NextGen DepMap paper and DepMap."
+title: "VisRWE: dependencies and co-dependencies of RNA-modification writers, readers and erasers in DepMap NextGen organoid and DepMap 2D CRISPR screens"
+version: 3.0.0
+date-released: 2026-10-09
+license: MIT
+repository-code: "https://github.com/shuyang-zhao/VisRWE_DepMap"
+url: "https://shuyang-zhao.github.io/VisRWE_DepMap/"
+authors:
+  - family-names: Zhao
+    given-names: Shuyang
+    affiliation: "Department of Chemistry, University of California, Riverside"
+keywords:
+  - DepMap
+  - CRISPR screens
+  - organoids
+  - RNA modification
+  - epitranscriptomics
+  - co-dependency
+references:
+  - type: article
+    title: "A dependency map enhanced with next-generation 3D cancer models"
+    authors:
+      - family-names: Neiswender
+      - family-names: Maffa
+      - family-names: Brenan
+      - name: "et al."
+    journal: Nature
+    year: 2026
+    doi: 10.1038/s41586-026-10843-7
+  - type: article
+    title: "Defining a cancer dependency map"
+    authors:
+      - family-names: Tsherniak
+        given-names: Aviad
+      - name: "et al."
+    journal: Cell
+    volume: 170
+    start: 564
+    end: 576
+    year: 2017
+  - type: article
+    title: "Chronos: a cell population dynamics model of CRISPR experiments that improves inference of gene fitness effects"
+    authors:
+      - family-names: Dempster
+        given-names: Joshua M.
+      - name: "et al."
+    journal: Genome Biology
+    volume: 22
+    start: 343
+    year: 2021

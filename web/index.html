@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VisRWE · DepMap</title>
+<meta name="description" content="Interactive explorer of dependencies and co-dependencies of RNA-modification writers, readers and erasers in the DepMap NextGen organoid screens and DepMap 2D.">
+<meta name="author" content="Shuyang Zhao, Department of Chemistry, University of California, Riverside">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='9' cy='16' r='5' fill='%230b8a6f'/%3E%3Ccircle cx='23' cy='9' r='4' fill='%23c25b12'/%3E%3Ccircle cx='23' cy='24' r='4' fill='%236d4bc4'/%3E%3Cpath d='M9 16L23 9M9 16L23 24' stroke='%23888' stroke-width='2'/%3E%3C/svg%3E">
+<style>%%STYLE%%</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1 data-t="title"></h1>
+    <span class="tag" data-t="tagline"></span>
+    <span class="spacer"></span>
+    <div class="seg ds" id="dsSeg"><button data-v="NextGen" data-t="ds_ng"></button><button data-v="DepMap2D" data-t="ds_2d"></button><button data-v="compare" data-t="ds_cmp"></button></div>
+    <div class="seg" id="modeSeg"><button data-v="explore" data-t="m_explore"></button><button data-v="overview" data-t="m_overview"></button><button data-v="modules" data-t="m_modules"></button></div>
+    <button class="iconbtn" id="langBtn"></button>
+    <button class="iconbtn" id="themeBtn" data-t="theme"></button>
+    <button class="iconbtn" id="aboutBtn" data-t="about"></button>
+  </header>
+  <aside id="side">
+    <div class="sec" data-t="search"></div>
+    <input type="text" id="search" list="geneList" autocomplete="off"><datalist id="geneList"></datalist>
+    <p class="hint" id="modeHelp"></p>
+    <div class="row" id="modLevelRow"><span data-t="mod_level"></span><div class="seg" id="modLevel"><button data-v="category" data-t="lvl_cat"></button><button data-v="pathway" data-t="lvl_pw"></button></div></div>
+    <div class="btnrow"><button class="iconbtn" id="undoBtn" data-t="undo"></button><button class="iconbtn" id="resetBtn" data-t="reset"></button><button class="iconbtn" id="fitBtn" data-t="fit"></button><button class="iconbtn" id="layoutBtn" data-t="relayout"></button><button class="iconbtn" id="pngBtn" data-t="png"></button></div>
+    <div class="crumbs" id="crumbs"></div>
+
+    <div class="sec" data-t="filters"></div>
+    <div class="hint"><span data-t="rmin"></span>: <b id="rminVal"></b></div>
+    <input type="range" id="rmin" min="0.3" max="0.8" step="0.01" value="0.3">
+    <div class="row"><span data-t="sign"></span><label><input type="checkbox" id="pos" checked><span data-t="pos"></span></label><label><input type="checkbox" id="neg" checked><span data-t="neg"></span></label></div>
+    <div class="row" id="clsRow"><label><input type="checkbox" id="cBoth" checked><span class="sw" style="background:var(--both)"></span><span data-t="c_both"></span></label>
+      <label><input type="checkbox" id="cNg" checked><span class="sw" style="background:var(--ng)"></span><span data-t="c_ng"></span></label>
+      <label><input type="checkbox" id="c2d" checked><span class="sw" style="background:var(--d2)"></span><span data-t="c_2d"></span></label></div>
+    <div class="hint"><span data-t="max_expand"></span>: <b id="maxExpVal"></b></div>
+    <input type="range" id="maxExp" min="5" max="100" step="5" value="30">
+    <div class="row"><label><input type="checkbox" id="rweOnly"><span data-t="rwe_only"></span></label></div>
+    <div class="row"><label><input type="checkbox" id="hideLib"><span data-t="hide_lib"></span></label></div>
+
+    <div class="sec" data-t="display"></div>
+    <div class="row"><span data-t="labels"></span><div class="seg" id="labelSeg"><button data-v="auto" data-t="l_auto"></button><button data-v="all" data-t="l_all"></button><button data-v="none" data-t="l_none"></button></div></div>
+    <div class="row"><span data-t="label_size"></span><input type="range" id="labelSize" min="8" max="22" step="1" value="12" style="flex:1"></div>
+    <div class="row"><label><input type="checkbox" id="edgeLabels"><span data-t="edge_labels"></span></label></div>
+
+    <div class="sec" data-t="lineage_pairs"></div>
+    <div class="row"><label><input type="checkbox" id="lpHalo" checked><span data-t="show_lp"></span></label></div>
+    <div id="lpList"></div>
+
+    <div class="sec" data-t="legend_edges"></div>
+    <div class="legend" id="legend"></div>
+    <div class="counts" id="counts"></div>
+  </aside>
+  <main>
+    <div id="net"></div>
+    <div id="matrix"></div>
+    <div id="loading" data-t="loading"></div>
+    <div id="panel"></div>
+  </main>
+</div>
+<div id="tip"></div>
+<div id="about"><div class="box" id="aboutBox"></div></div>
+<script>%%VIS%%</script>
+<script>%%I18N%%</script>
+<script>const BUNDLE = %%DATA%%;</script>
+<script>%%APP%%</script>
+</body>
+</html>

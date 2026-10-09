@@ -1,0 +1,3 @@
+dataset	screens	family_genes	pairs	calls	p_boundary	median_abs_r_calls
+NextGen	147	5693	16202278	66031	2.08646e-05	0.377745
+DepMap2D	597	5693	16202278	77398	0.000295513	0.372216
