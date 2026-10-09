@@ -33,6 +33,7 @@ header .seg, header .iconbtn { flex: none; }
 #side { overflow: auto; padding: 10px 14px 18px; border-right: 1px solid var(--line); background: var(--panel); }
 main { position: relative; min-width: 0; }
 #net { position: absolute; inset: 0; background: var(--canvas); }
+#net :focus:not(:focus-visible) { outline: none; }
 #matrix { position: absolute; inset: 0; overflow: auto; display: none; background: var(--canvas); padding: 12px 16px; }
 #matrix svg text { font-family: inherit; }
 #matrix .rowlab { cursor: pointer; }
@@ -101,11 +102,25 @@ table.list tr.pick:hover td { background: var(--panel2); }
 #about .box { background: var(--bg); color: var(--ink); border-radius: 14px; max-width: 760px; width: 100%; max-height: 90vh; overflow: auto; padding: 18px 22px; box-shadow: var(--shadow); }
 #about h2 { margin-top: 0; }
 #about pre { white-space: pre-wrap; background: var(--panel2); border-radius: 8px; padding: 8px 10px; font-size: 12px; }
+#egoBar { position: absolute; top: 10px; left: 10px; max-width: calc(100% - 20px); display: none; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 10px; padding: 5px 10px; font-size: 12px; box-shadow: var(--shadow); pointer-events: none; }
+#egoBar .k { color: var(--muted); }
+#empty { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; padding: 16px; }
+#empty .box { max-width: 460px; text-align: center; color: var(--muted); }
+#empty h2 { color: var(--ink); font-size: 18px; margin: 0 0 8px; }
+#empty p { margin: 0 0 14px; }
+#empty .chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; align-items: center; margin-bottom: 12px; }
+#empty .chips button { border: 1px solid var(--line); background: var(--bg); border-radius: 14px; padding: 3px 12px; cursor: pointer; }
+#empty .chips button:hover { background: var(--panel2); }
+.linkbtn { border: 0; background: none; color: var(--accent); cursor: pointer; padding: 0; text-decoration: underline; }
+.hint.warn { color: var(--warn); }
+.hint:empty { display: none; }
 #loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 14px; }
 
 @media (max-width: 900px) {
-  #app { grid-template-columns: 1fr; grid-template-rows: auto auto 70vh; height: auto; }
+  #app { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto 70vh; height: auto; }
   header { flex-wrap: wrap; padding: 8px 12px; height: auto; }
+  header .tag { order: 9; flex-basis: 100%; white-space: normal; }
   #side { border-right: 0; border-bottom: 1px solid var(--line); }
   #panel { width: calc(100% - 20px); }
 }

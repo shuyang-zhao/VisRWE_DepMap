@@ -24,6 +24,7 @@
   <aside id="side">
     <div class="sec" data-t="search"></div>
     <input type="text" id="search" list="geneList" autocomplete="off"><datalist id="geneList"></datalist>
+    <p class="hint warn" id="searchMsg"></p>
     <p class="hint" id="modeHelp"></p>
     <div class="row" id="modLevelRow"><span data-t="mod_level"></span><div class="seg" id="modLevel"><button data-v="category" data-t="lvl_cat"></button><button data-v="pathway" data-t="lvl_pw"></button></div></div>
     <div class="btnrow"><button class="iconbtn" id="undoBtn" data-t="undo"></button><button class="iconbtn" id="resetBtn" data-t="reset"></button><button class="iconbtn" id="fitBtn" data-t="fit"></button><button class="iconbtn" id="layoutBtn" data-t="relayout"></button><button class="iconbtn" id="pngBtn" data-t="png"></button></div>
@@ -57,6 +58,12 @@
   <main>
     <div id="net"></div>
     <div id="matrix"></div>
+    <div id="egoBar"></div>
+    <div id="empty"><div class="box">
+      <h2 data-t="empty_title"></h2><p data-t="empty_body"></p>
+      <div class="chips"><span data-t="empty_try"></span><button data-g="METTL3">METTL3</button><button data-g="PUS7">PUS7</button><button data-g="NSUN2">NSUN2</button><button data-g="ADAR">ADAR</button></div>
+      <button class="linkbtn" id="emptyOverview" data-t="empty_overview"></button>
+    </div></div>
     <div id="loading" data-t="loading"></div>
     <div id="panel"></div>
   </main>

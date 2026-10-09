@@ -88,6 +88,7 @@ const S = {
   rmin: 0.3, pos: true, neg: true, cls: { both: true, ng: true, d2: true }, rweOnly: false, hideLib: false,
   labels: 'auto', labelSize: 12, edgeLabels: false, lpHalo: true, maxExpand: 30, modLevel: 'category',
   shown: new Set(), history: [], ghosts: [], hoverNode: null, selected: null, demean: false, hiddenLin: new Set(),
+  root: null, baseLen: 0, userMoved: false, builtMode: null, // explore: centre gene, initial log length, view moved by hand, mode drawn last
 };
 const t = (k, ...a) => { const v = (I18N[S.lang] || I18N.en)[k]; return typeof v === 'function' ? v(...a) : (v == null ? k : v); };
 const lab = (type, v) => (S.lang === 'zh' && LABELS[type] && LABELS[type].zh && LABELS[type].zh[v]) || v;
@@ -146,13 +147,15 @@ function labelFor(i) {
   return S.mode === 'explore' && S.shown.size <= 120 ? G.sym[i] : '';
 }
 function nodeObj(i, x, y) {
-  const deg = S.ds === 'DepMap2D' ? G.d2d[i] : G.dng[i];
-  const size = G.rwe[i] ? 14 + Math.min(10, Math.sqrt(deg)) : 5 + Math.min(9, Math.sqrt(deg) * 0.8);
+  const deg = S.ds === 'DepMap2D' ? G.d2d[i] : G.dng[i], root = S.mode === 'explore' && i === S.root;
+  const size = (G.rwe[i] ? 14 + Math.min(10, Math.sqrt(deg)) : 5 + Math.min(9, Math.sqrt(deg) * 0.8)) + (root ? 8 : 0);
   const col = nodeColour(i);
-  return { id: i, x, y, label: labelFor(i), size, shape: G.rwe[i] ? 'dot' : 'dot',
-    color: { background: col, border: G.cav[i] ? '#222' : col, highlight: { background: col, border: COL.ink }, hover: { background: col, border: COL.ink } },
-    borderWidth: G.rwe[i] ? (G.cav[i] ? 2.5 : 1.5) : 0.5,
-    font: { size: G.rwe[i] ? S.labelSize + 1 : S.labelSize - 1, color: COL.ink, strokeWidth: 3, strokeColor: COL.canvas, face: 'inherit' } };
+  const o = { id: i, label: labelFor(i), size, shape: 'dot',
+    color: { background: col, border: root ? COL.ink : G.cav[i] ? '#222' : col, highlight: { background: col, border: COL.ink }, hover: { background: col, border: COL.ink } },
+    borderWidth: root ? 3.5 : G.rwe[i] ? (G.cav[i] ? 2.5 : 1.5) : 0.5,
+    font: { size: root ? S.labelSize + 5 : G.rwe[i] ? S.labelSize + 1 : S.labelSize - 1, color: COL.ink, strokeWidth: 3, strokeColor: COL.canvas, face: 'inherit' } };
+  if (x != null) { o.x = x; o.y = y; }
+  return o;
 }
 function edgeObj(e) {
   const r = edgeR(e), halo = S.lpHalo && LP_EDGES.has(e) && S.ds !== 'DepMap2D', light = S.mode === 'overview';
@@ -164,115 +167,231 @@ function edgeObj(e) {
 function createNetwork() {
   nodesDS = new vis.DataSet(); edgesDS = new vis.DataSet();
   net = new vis.Network($('net'), { nodes: nodesDS, edges: edgesDS }, {
-    autoResize: true, layout: { improvedLayout: false },
+    autoResize: true, layout: { improvedLayout: false }, physics: { enabled: false },
     interaction: { hover: true, hoverConnectedEdges: false, tooltipDelay: 0, hideEdgesOnDrag: true, multiselect: false, navigationButtons: false },
-    physics: { enabled: false, solver: 'forceAtlas2Based', forceAtlas2Based: { gravitationalConstant: -60, centralGravity: 0.008, springLength: 110, springConstant: 0.05, damping: 0.6, avoidOverlap: 0.4 },
-      stabilization: { enabled: false } },
     nodes: { scaling: { label: { enabled: true, drawThreshold: 5 } } }, edges: { smooth: false, selectionWidth: 1.5 } });
   net.on('hoverNode', (p) => onHoverNode(p.node, p.pointer));
   net.on('blurNode', () => onBlurNode());
   net.on('hoverEdge', (p) => onHoverEdge(p.edge, p.pointer));
   net.on('blurEdge', () => hideTip());
   net.on('click', (p) => onClick(p));
-  net.on('dragStart', hideTip);
-  net.on('zoom', hideTip);
+  net.on('dragStart', (p) => { hideTip(); finishAnim(); if (!p.nodes.length) S.userMoved = true; });
+  net.on('zoom', () => { hideTip(); finishAnim(); S.userMoved = true; });
+  net.on('resize', () => { if (S.mode === 'explore' && S.root != null && !S.userMoved && !anim) animateTo(null, null, egoView(posMap()), 0); });
   $('net').addEventListener('mouseleave', () => { hideTip(); S.hoverNode = null; clearTimeout(ghostTimer); ghostTimer = setTimeout(clearGhosts, 300); });
 }
 
 function render() {
-  hideTip(); clearGhosts();
-  nodesDS.clear(); edgesDS.clear();
+  hideTip(); clearGhosts(); finishAnim();
   $('net').style.display = S.mode === 'modules' ? 'none' : ''; $('matrix').style.display = S.mode === 'modules' ? 'block' : 'none';
+  $('empty').style.display = S.mode === 'explore' && S.root == null ? 'flex' : 'none';
   if (S.mode === 'explore') renderExplore();
-  else if (S.mode === 'overview') renderOverview();
-  else renderModules();
-  updateCounts(); updateLegend(); updateCrumbs();
+  else { nodesDS.clear(); edgesDS.clear(); S.builtMode = S.mode; if (S.mode === 'overview') renderOverview(); else renderModules(); }
+  updateCounts(); updateLegend(); updateCrumbs(); updateEgoBar();
 }
 
-// ---- explore mode
-function seedExplore() {
-  S.shown = new Set(); S.history = [];
-  for (let e = 0; e < E.n; e++) if (G.rwe[E.a[e]] && G.rwe[E.b[e]] && edgeVisible(e)) { S.shown.add(E.a[e]); S.shown.add(E.b[e]); }
-  if (!S.shown.size) S.shown.add(SYM.get('PUS7'));
+// ---- camera and animation: node positions and the view are driven together by one requestAnimationFrame loop (no physics, no vis focus)
+const posMap = () => { const P = net.getPositions(), m = new Map(); for (const k in P) if (k[0] !== 'g') m.set(+k, P[k]); return m; };
+function viewBox() { // part of the canvas not covered by the detail panel (DOM px) and the matching horizontal offset of its centre
+  const el = $('net'), W = el.clientWidth || 800, H = el.clientHeight || 600, p = $('panel');
+  if (p.style.display === 'block') { const pw = p.offsetWidth + 20; if (W - pw >= 0.4 * W) return { W: W - pw, H, off: -pw / 2 }; }
+  return { W, H, off: 0 };
 }
-const LAYOUT = new Map(D.layout.idx.map((g, k) => [g, [D.layout.x[k], D.layout.y[k]]]));
+function egoView(pos) { // the explored gene sits at the centre of the visible canvas; every node fits around it, with room left for a hover preview
+  const v = viewBox(), c = pos.get(S.root) || { x: 0, y: 0 }, pad = 110;
+  let mx = 1, my = 1;
+  for (const p of pos.values()) { mx = Math.max(mx, Math.abs(p.x - c.x)); my = Math.max(my, Math.abs(p.y - c.y)); }
+  return { pos: { x: c.x, y: c.y }, off: v.off, scale: Math.min(1, Math.max(0.06, Math.min((v.W / 2 - 30) / (mx + pad), (v.H / 2 - 20) / (my + pad)))) };
+}
+function fitView(pos) { // bounding-box fit (overview)
+  const v = viewBox(); let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (const p of pos.values()) { x0 = Math.min(x0, p.x); x1 = Math.max(x1, p.x); y0 = Math.min(y0, p.y); y1 = Math.max(y1, p.y); }
+  if (!Number.isFinite(x0)) return null;
+  return { pos: { x: (x0 + x1) / 2, y: (y0 + y1) / 2 }, off: v.off, scale: Math.min(1.2, Math.max(0.02, Math.min((v.W - 60) / (x1 - x0 + 60), (v.H - 60) / (y1 - y0 + 60)))) };
+}
+let anim = null;
+function animateTo(target, start, view, ms) { // target/start: Map id -> {x, y}; view: {pos, scale, off} or null (camera stays)
+  finishAnim();
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) ms = 0;
+  const B = net.body.nodes, t0 = performance.now(), me = { target, raf: 0 }, cv = net.canvas.frame.canvas;
+  // start = the canvas point now under the target's screen anchor, so a gene that is already at the anchor stays put while the scale changes
+  const v0 = view && { pos: net.DOMtoCanvas({ x: cv.clientWidth / 2 + view.off, y: cv.clientHeight / 2 }), scale: net.getScale() };
+  const ease = (u) => 1 - (1 - u) ** 3;
+  const frame = (now) => {
+    const u = ms ? Math.min(1, (now - t0) / ms) : 1, k = ease(u);
+    if (target) for (const [id, b] of target) { const n = B[id]; if (!n) continue; const a = (start && start.get(id)) || b; n.x = a.x + (b.x - a.x) * k; n.y = a.y + (b.y - a.y) * k; }
+    if (view) net.moveTo({ position: { x: v0.pos.x + (view.pos.x - v0.pos.x) * k, y: v0.pos.y + (view.pos.y - v0.pos.y) * k },
+      scale: v0.scale + (view.scale - v0.scale) * k, offset: { x: view.off, y: 0 }, animation: false });
+    net.redraw();
+    if (u < 1) me.raf = requestAnimationFrame(frame); else if (anim === me) anim = null;
+  };
+  anim = me;
+  if (ms) me.raf = requestAnimationFrame(frame); else frame(t0);
+}
+function finishAnim() { // jump a running animation to its final node positions; the camera stays where it is
+  if (!anim) return;
+  const a = anim; anim = null; cancelAnimationFrame(a.raf);
+  if (a.target) { for (const [id, b] of a.target) { const n = net.body.nodes[id]; if (n) { n.x = b.x; n.y = b.y; } } net.redraw(); }
+}
+function recentre(ms) { if (S.mode === 'explore' && S.root != null) animateTo(null, null, egoView(posMap()), ms); }
+function centreOn(i, ms) { const p = net.getPositions([i])[i]; if (p) animateTo(null, null, { pos: p, scale: Math.max(net.getScale(), 0.8), off: viewBox().off }, ms); }
+
+// ---- explore mode: the network of one gene (centre) and its called partners; partners can be expanded outwards
+// S.history = expansion log [{node, kind: 'expand' | 'add', added}]; the first S.baseLen entries make the initial network of S.root
+const absR = (i, j) => { const e = pairEdge(i, j); return e == null ? 0 : Math.abs(edgeR(e)); };
+const strength = (i, j) => Math.max(0, Math.min(1, (absR(i, j) - 0.3) / 0.5)); // 0 at |r| = 0.3, 1 at |r| >= 0.8
+const groupKey = (j) => (G.rwe[j] ? -100 + Math.max(G.fam[j], 0) : Math.max(G.cat[j], 0));
+const egoOrder = (i, list) => [...list].sort((a, b) => groupKey(a) - groupKey(b) || absR(i, b) - absR(i, a)); // same colour together, stronger first
+const SPACING = 40;
+const topNew = (i) => visibleNeighbours(i).filter((x) => !S.shown.has(x.j)).slice(0, S.maxExpand).map((x) => x.j);
+function showEgo(i, extra = []) { // entry point: search, URL, "centre on this gene", lineage-pair list
+  S.mode = 'explore'; syncSeg('modeSeg', 'explore'); $('modLevelRow').style.display = 'none'; $('modeHelp').textContent = t('explore_help');
+  S.root = i; S.history = [{ node: i, kind: 'expand', added: [] }]; if (extra.length) S.history.push({ node: i, kind: 'add', added: extra });
+  S.baseLen = S.history.length; S.userMoved = false;
+  $('net').style.display = ''; $('matrix').style.display = 'none'; $('empty').style.display = 'none';
+  selectGene(i); writeHash();
+  buildEgo(true, true);
+  updateLegend();
+}
 function renderExplore() {
-  const fresh = !S.shown.size;
-  if (fresh) seedExplore();
-  const nodes = [...S.shown].map((i) => { const p = LAYOUT.get(i) || [Math.random() * 400, Math.random() * 400]; return nodeObj(i, p[0] / 3, p[1] / 3); });
-  nodesDS.add(nodes);
-  edgesDS.add(inducedEdges(S.shown).map(edgeObj));
-  if (fresh) relax(260);
+  if (S.root == null) { nodesDS.clear(); edgesDS.clear(); S.shown = new Set(); S.history = []; S.builtMode = 'explore'; return; }
+  buildEgo(false, true);
 }
-function relax(iterations) { // force-directed layout of everything currently shown
-  net.setOptions({ physics: { enabled: true } });
-  net.stabilize(iterations);
-  net.once('stabilizationIterationsDone', () => { net.setOptions({ physics: { enabled: false } }); net.fit({ animation: { duration: 300 } }); });
+function egoReplay() { // re-derive the shown genes from the expansion log under the current dataset and filters
+  const log = S.history; S.shown = new Set([S.root]); S.history = [];
+  for (const h of log) {
+    if (!S.shown.has(h.node)) continue;
+    const added = h.kind === 'add' ? h.added.filter((j) => { const e = pairEdge(h.node, j); return !S.shown.has(j) && e != null && edgeVisible(e); }) : topNew(h.node);
+    added.forEach((j) => S.shown.add(j));
+    S.history.push({ node: h.node, kind: h.kind, added });
+  }
+}
+function egoLayout() { // radial tree: root at the origin, each subtree in its own angular wedge, closer to the parent = larger |r|
+  const root = S.root, parent = new Map(), kids = new Map();
+  for (const h of S.history) for (const j of h.added) if (j !== root && S.shown.has(j) && !parent.has(j)) parent.set(j, h.node);
+  for (const j of S.shown) if (j !== root && !parent.has(j)) parent.set(j, root);
+  for (const j of parent.keys()) { const seen = new Set([j]); let q = parent.get(j); while (q !== root) { if (!S.shown.has(q) || seen.has(q)) { parent.set(j, root); break; } seen.add(q); q = parent.get(q); } }
+  for (const [j, p] of parent) { if (!kids.has(p)) kids.set(p, []); kids.get(p).push(j); }
+  for (const [p, list] of kids) kids.set(p, egoOrder(p, list));
+  const w = new Map(), weigh = (v) => { let s = 0; for (const c of kids.get(v) || []) s += weigh(c); s = Math.max(1, 0.55 * s); w.set(v, s); return s; };
+  weigh(root);
+  const pos = new Map([[root, { x: 0, y: 0 }]]), wedge = new Map([[root, [-Math.PI / 2, 1.5 * Math.PI]]]);
+  let level = [root], R = 0, band = 0;
+  for (let depth = 1; level.length; depth++) {
+    const next = [];
+    for (const v of level) {
+      const ch = kids.get(v) || []; if (!ch.length) continue;
+      const [a0, a1] = wedge.get(v), tot = ch.reduce((s, c) => s + w.get(c), 0); let a = a0;
+      for (const c of ch) { const da = (a1 - a0) * w.get(c) / tot; wedge.set(c, [a, a + da]); a += da; next.push(c); }
+    }
+    if (!next.length) break;
+    const minW = Math.min(...next.map((c) => wedge.get(c)[1] - wedge.get(c)[0]));
+    R = Math.max(depth === 1 ? 170 : R * (1 + band) + 130, SPACING / minW); band = depth === 1 ? 0.45 : 0.15;
+    for (const c of next) { const [a0, a1] = wedge.get(c), th = (a0 + a1) / 2, d = R * (1 + band * (1 - strength(parent.get(c), c))); pos.set(c, { x: d * Math.cos(th), y: d * Math.sin(th) }); }
+    level = next;
+  }
+  return { pos, parent };
+}
+function buildEgo(animate, forceView) { // (re)draw the explored network from the log; genes already on screen move to their new spots
+  hideTip(); clearGhosts(); finishAnim();
+  const old = S.builtMode === 'explore' ? net.getPositions() : {};
+  egoReplay();
+  const { pos, parent } = egoLayout(), start = new Map();
+  for (const [i, p] of pos) {
+    let s = old[i] || old['g' + i];
+    if (!s) { let q = parent.get(i); while (q != null && !old[q]) q = parent.get(q); s = (q != null && old[q]) || { x: 0, y: 0 }; }
+    start.set(i, animate ? { x: s.x, y: s.y } : p);
+  }
+  nodesDS.clear(); edgesDS.clear();
+  nodesDS.add([...S.shown].map((i) => nodeObj(i, start.get(i).x, start.get(i).y)));
+  edgesDS.add(inducedEdges(S.shown).map(edgeObj));
+  S.builtMode = 'explore';
+  animateTo(pos, start, forceView || !S.userMoved ? egoView(pos) : null, animate ? 520 : 0);
+  updateCounts(); updateCrumbs(); updateEgoBar();
 }
 function inducedEdges(set) {
   const out = [];
   for (const i of set) for (let k = ADJ.off[i]; k < ADJ.off[i + 1]; k++) { const e = ADJ.idx[k], j = otherEnd(e, i); if (j > i && set.has(j) && edgeVisible(e)) out.push(e); }
   return out;
 }
-function addGenes(newOnes, centre) {
-  if (!newOnes.length) return;
-  const c = net.getPositions([centre])[centre] || { x: 0, y: 0 };
-  const R = 150 + 9 * newOnes.length, base = Math.random() * Math.PI * 2;
-  const nodes = newOnes.map((j, k) => { const a = base + 2 * Math.PI * k / newOnes.length; return nodeObj(j, c.x + R * Math.cos(a), c.y + R * Math.sin(a)); });
-  newOnes.forEach((j) => S.shown.add(j));
-  nodesDS.add(nodes);
-  const have = new Set(edgesDS.getIds());
-  const add = []; for (const j of newOnes) for (let k = ADJ.off[j]; k < ADJ.off[j + 1]; k++) { const e = ADJ.idx[k]; if (S.shown.has(otherEnd(e, j)) && edgeVisible(e) && !have.has('e' + e)) { add.push(edgeObj(e)); have.add('e' + e); } }
+function placeAround(i, list) { // where new partners of node i go: a fan pointing away from the centre (a full outer ring for the centre itself)
+  const P = posMap(), c = P.get(i), out = new Map(), n = list.length;
+  if (!c || !n) return out;
+  const root = P.get(S.root) || { x: 0, y: 0 }, occ = [...P.values()], items = egoOrder(i, list);
+  let ang, dist;
+  if (i === S.root) {
+    let maxD = 0; for (const p of occ) maxD = Math.max(maxD, Math.hypot(p.x - c.x, p.y - c.y));
+    const R = Math.max(maxD + 110, n * SPACING / (2 * Math.PI));
+    ang = (k) => -Math.PI / 2 + 2 * Math.PI * k / n; dist = (j) => R * (1 + 0.2 * (1 - strength(i, j)));
+  } else { // larger fans alternate between two staggered rows, which halves the arc they need
+    const rows = n > 6 ? 2 : 1, th = Math.atan2(c.y - root.y, c.x - root.x), d0 = Math.max(100 + 1.5 * n, (n - 1) * SPACING / rows / Math.PI);
+    const span = n > 1 ? Math.min(Math.PI, (n - 1) * SPACING / rows / d0) : 0;
+    ang = (k) => th + (n > 1 ? span * (k / (n - 1) - 0.5) : 0); dist = (j, k) => d0 * (1 + 0.25 * (1 - strength(i, j))) + (rows === 2 && k % 2 ? 46 : 0);
+  }
+  items.forEach((j, k) => { // step outwards along the ray until the spot is free
+    const a = ang(k); let d = dist(j, k), p;
+    for (let step = 0; step < 40; step++) { p = { x: c.x + d * Math.cos(a), y: c.y + d * Math.sin(a) }; if (!occ.some((q) => Math.hypot(q.x - p.x, q.y - p.y) < 30)) break; d += 16; }
+    occ.push(p); out.set(j, p);
+  });
+  return out;
+}
+function addGenes(list, target, from, start) { // add genes at their final spots, growing out of `from`; the centre gene stays centred
+  if (!list.length) return;
+  finishAnim();
+  const P = posMap(), c = P.get(from) || P.get(S.root) || { x: 0, y: 0 };
+  start = start || new Map(list.map((j) => [j, { x: c.x, y: c.y }]));
+  list.forEach((j) => S.shown.add(j));
+  nodesDS.add(list.map((j) => nodeObj(j, start.get(j).x, start.get(j).y)));
+  const have = new Set(edgesDS.getIds()), add = [];
+  for (const j of list) for (let k = ADJ.off[j]; k < ADJ.off[j + 1]; k++) { const e = ADJ.idx[k]; if (S.shown.has(otherEnd(e, j)) && edgeVisible(e) && !have.has('e' + e)) { add.push(edgeObj(e)); have.add('e' + e); } }
   edgesDS.add(add);
-  settle(newOnes);
-  refreshLabels(); updateCounts();
+  const all = posMap(); for (const [j, p] of target) all.set(j, p);
+  animateTo(target, start, S.userMoved ? null : egoView(all), 480);
+  refreshLabels(); updateCounts(); updateEgoBar();
 }
-let settleTimer = null;
-function settle(movable) { // animated force-directed relaxation of the newly added nodes; existing nodes stay where they are
-  const mv = new Set(movable);
-  nodesDS.update(nodesDS.getIds().filter((id) => typeof id === 'number').map((id) => ({ id, fixed: !mv.has(id) })));
-  net.setOptions({ physics: { enabled: true, stabilization: { enabled: false } } });
-  const done = () => { clearTimeout(settleTimer); net.setOptions({ physics: { enabled: false } }); nodesDS.update(nodesDS.getIds().filter((id) => typeof id === 'number').map((id) => ({ id, fixed: false }))); };
-  clearTimeout(settleTimer); settleTimer = setTimeout(done, 1800);
-  net.once('stabilized', done);
-}
-function ensureShown(i) { if (!S.shown.has(i)) addGenes([i], i); }
 function expand(i) {
-  ensureShown(i);
-  const add = visibleNeighbours(i).filter((x) => !S.shown.has(x.j)).slice(0, S.maxExpand).map((x) => x.j);
-  S.history.push({ node: i, added: add });
-  addGenes(add, i);
+  if (S.mode !== 'explore' || !S.shown.has(i)) { showEgo(i); return; }
+  const add = topNew(i);
+  if (!add.length) return;
+  S.history.push({ node: i, kind: 'expand', added: add });
+  addGenes(add, placeAround(i, add), i);
   updateCrumbs();
 }
 function removeGenes(list) {
-  const rm = list.filter((j) => S.shown.has(j));
+  finishAnim();
+  const rm = list.filter((j) => S.shown.has(j) && j !== S.root);
   rm.forEach((j) => S.shown.delete(j));
   nodesDS.remove(rm);
-  const dead = edgesDS.getIds().filter((id) => { const e = +id.slice(1); return !S.shown.has(E.a[e]) || !S.shown.has(E.b[e]); });
+  const dead = edgesDS.getIds().filter((id) => { const e = +String(id).slice(1); return String(id)[0] === 'e' && (!S.shown.has(E.a[e]) || !S.shown.has(E.b[e])); });
   edgesDS.remove(dead);
-  updateCounts();
+  refreshLabels(); updateCounts(); updateCrumbs(); updateEgoBar();
 }
-function collapse(i) {
-  const keep = (j) => G.rwe[j] && S.history.length === 0;
-  const added = S.history.filter((h) => h.node === i).flatMap((h) => h.added);
-  S.history = S.history.filter((h) => h.node !== i);
-  const stillNeeded = new Set(S.history.flatMap((h) => [h.node, ...h.added]));
-  removeGenes(added.filter((j) => !stillNeeded.has(j) && !keep(j)));
-  updateCrumbs();
+function collapse(i) { // remove everything that was grown out of node i (its expansions and their descendants)
+  if (i === S.root) { resetEgo(); return; }
+  const drop = new Set([i]), gone = new Set();
+  for (let grew = true; grew;) { grew = false; for (const h of S.history.slice(S.baseLen)) if (drop.has(h.node)) for (const j of h.added) if (!gone.has(j)) { gone.add(j); drop.add(j); grew = true; } }
+  S.history = S.history.filter((h, k) => k < S.baseLen || !drop.has(h.node));
+  const still = new Set(S.history.flatMap((h) => h.added));
+  removeGenes([...gone].filter((j) => !still.has(j)));
 }
-function undo() { const h = S.history.pop(); if (h) { const still = new Set(S.history.flatMap((x) => [x.node, ...x.added])); removeGenes(h.added.filter((j) => !still.has(j))); updateCrumbs(); } }
+function undo() {
+  if (S.mode !== 'explore' || S.history.length <= S.baseLen) return;
+  const h = S.history.pop(), still = new Set(S.history.flatMap((x) => x.added));
+  removeGenes(h.added.filter((j) => !still.has(j)));
+}
+function resetEgo() { if (S.root == null) return; S.history = S.history.slice(0, S.baseLen); S.userMoved = false; buildEgo(true, true); }
 
-// ghost preview on hover
+// ghost preview on hover: the partners an expansion would add, drawn where they would land
 let ghostTimer = null;
 function showGhosts(i) {
   clearGhosts();
   const nb = visibleNeighbours(i).filter((x) => !S.shown.has(x.j)).slice(0, S.maxExpand);
   if (!nb.length) return;
-  const c = net.getPositions([i])[i]; if (!c) return;
-  const R = 130 + 7 * nb.length;
+  finishAnim();
+  const spot = placeAround(i, nb.map((x) => x.j)); if (!spot.size) return;
   S.ghosts = nb.map((x) => x.j); S.ghostOwner = i;
-  nodesDS.add(nb.map((x, k) => { const a = 2 * Math.PI * k / nb.length - Math.PI / 2;
-    return { id: 'g' + x.j, x: c.x + R * Math.cos(a), y: c.y + R * Math.sin(a), label: S.labels === 'none' ? '' : G.sym[x.j], size: 5, shape: 'dot', physics: false,
+  nodesDS.add(nb.map((x) => { const p = spot.get(x.j);
+    return { id: 'g' + x.j, x: p.x, y: p.y, label: S.labels === 'none' ? '' : G.sym[x.j], size: 5, shape: 'dot',
       color: { background: COL.ghost, border: COL.ghost, highlight: { background: COL.ghost, border: COL.ink }, hover: { background: COL.ghost, border: COL.ink } },
       font: { size: S.labelSize - 2, color: COL.muted, strokeWidth: 2, strokeColor: COL.canvas } }; }));
   edgesDS.add(nb.map((x) => ({ id: 'ge' + x.e, from: i, to: 'g' + x.j, dashes: [4, 4], width: 1, color: { color: COL.ghost, opacity: 0.8 }, smooth: false })));
@@ -283,8 +402,18 @@ function clearGhosts() {
   nodesDS.remove(S.ghosts.map((j) => 'g' + j));
   S.ghosts = [];
 }
+function addGhost(j) { // click on a grey node: add only that partner, exactly where it was previewed
+  const from = S.ghostOwner, p = net.getPositions(['g' + j])['g' + j];
+  clearGhosts();
+  if (from == null || !p || S.shown.has(j)) return;
+  S.history.push({ node: from, kind: 'add', added: [j] });
+  const spot = new Map([[j, { x: p.x, y: p.y }]]);
+  addGenes([j], spot, from, spot);
+  updateCrumbs();
+}
 
 // ---- overview mode
+const LAYOUT = new Map(D.layout.idx.map((g, k) => [g, [D.layout.x[k], D.layout.y[k]]]));
 function renderOverview() {
   const nodes = new Set(), edges = [];
   for (let e = 0; e < E.n; e++) {
@@ -361,14 +490,34 @@ function updateLegend() {
   if (S.ds === 'compare') h += ln(COL.both, 'c_both') + ln(COL.ng, 'c_ng') + ln(COL.d2, 'c_2d');
   h += ln(COL.muted, 'edge_neg', true);
   h += `<div class="sec" style="margin-top:8px">${t('legend_nodes')}</div><div>${t('node_rwe')}</div><div>${t('node_partner')}</div>`;
-  if (S.mode === 'explore') h += `<div><span class="sw" style="background:${COL.ghost}"></span>${t('node_ghost')}</div><div class="hint">${t('shift_hint')}</div>`;
+  if (S.mode === 'explore') h += `<div><span class="sw" style="background:${COL.ghost}"></span>${t('node_ghost')}</div><div class="hint">${t('node_root')}</div><div class="hint">${t('shift_hint')}</div>`;
   $('legend').innerHTML = h;
   $('clsRow').style.display = S.ds === 'compare' ? '' : 'none';
 }
 function updateCrumbs() {
-  $('crumbs').innerHTML = S.mode === 'explore' && S.history.length ? `<span class="hint">${t('history')}:</span>` + S.history.map((h) => `<span data-g="${h.node}">${esc(G.sym[h.node])}</span>`).join('') : '';
+  const nodes = S.mode === 'explore' && S.root != null ? [...new Set(S.history.map((h) => h.node))] : [];
+  $('crumbs').innerHTML = nodes.length ? `<span class="hint">${t('history')}:</span>` + nodes.map((i) => `<span data-g="${i}">${esc(G.sym[i])}</span>`).join('') : '';
   $('crumbs').querySelectorAll('span[data-g]').forEach((el) => el.addEventListener('click', () => focusGene(+el.dataset.g)));
-  $('undoBtn').disabled = !(S.mode === 'explore' && S.history.length);
+  $('undoBtn').disabled = !(S.mode === 'explore' && S.history.length > S.baseLen);
+}
+function updateEgoBar() { // one line above the canvas: whose network this is and how many of its partners are on screen
+  const bar = $('egoBar'), on = S.mode === 'explore' && S.root != null;
+  bar.style.display = on ? 'block' : 'none';
+  if (!on) return;
+  const g = `<b>${esc(G.sym[S.root])}</b>`, ds = S.ds === 'compare' ? t('ds_cmp') : dsName(S.ds), nb = visibleNeighbours(S.root), shown = nb.filter((x) => S.shown.has(x.j)).length;
+  bar.innerHTML = nb.length ? t('ego_bar', g, ds, shown, nb.length) + (shown < nb.length ? ` · <span class="k">${t('ego_more')}</span>` : '')
+    : t('ego_none', g, ds) + (G.infam[S.root] ? '' : `<br><span class="k">${t('not_dependency')}</span>`);
+}
+function restyle() { // colours, fonts and labels changed; positions stay
+  if (S.mode === 'modules') { render(); return; }
+  nodesDS.update(nodesDS.getIds().filter((id) => typeof id === 'number').map((i) => nodeObj(i)));
+  edgesDS.update(edgesDS.getIds().filter((id) => String(id)[0] === 'e').map((id) => edgeObj(+String(id).slice(1))));
+  updateLegend();
+}
+const syncSeg = (id, v) => document.querySelectorAll(`#${id} button`).forEach((b) => b.classList.toggle('on', b.dataset.v === v));
+function writeHash() { // shareable link: the centre gene in explore, otherwise the selected gene
+  const g = S.mode === 'explore' ? S.root : S.selected;
+  try { history.replaceState(null, '', '#' + (g != null ? 'gene=' + encodeURIComponent(G.sym[g]) + '&' : '') + 'ds=' + S.ds); } catch (e) { /* file:// */ }
 }
 
 // ------------------------------------------------------------------------------------------------ hover tooltip
@@ -414,28 +563,27 @@ function onClick(p) {
   hideTip();
   const id = p.nodes[0];
   if (id != null) {
-    if (typeof id === 'string' && id.startsWith('g')) { const j = +id.slice(1), from = S.ghostOwner ?? j; clearGhosts(); S.history.push({ node: from, added: [j] }); addGenes([j], from); updateCrumbs(); return; }
-    if (typeof id === 'string' && id.startsWith('c')) return;
-    if (S.mode === 'explore') { clearGhosts(); if (p.event?.srcEvent?.shiftKey) collapse(id); else { expand(id); } }
-    selectGene(id); return;
+    if (typeof id === 'string' && id.startsWith('g')) { addGhost(+id.slice(1)); return; }
+    if (typeof id === 'string') return;
+    if (S.mode === 'explore') { clearGhosts(); selectGene(id); if (p.event?.srcEvent?.shiftKey) collapse(id); else expand(id); return; }
+    selectGene(id); if (S.mode === 'overview') centreOn(id, 450);
+    return;
   }
   const eid = p.edges[0];
   if (eid != null && String(eid).startsWith('e')) { showEdge(+String(eid).slice(1)); return; }
-  $('panel').style.display = 'none';
+  closePanel();
 }
 
 // ------------------------------------------------------------------------------------------------ gene card
 function selectGene(i) {
   S.selected = i; refreshLabels();
-  try { history.replaceState(null, '', '#gene=' + encodeURIComponent(G.sym[i]) + '&ds=' + S.ds); } catch (e) { /* file:// */ }
+  if (S.mode !== 'explore') writeHash();
   showGene(i);
 }
-function focusGene(i) {
-  if (!nodesDS.get(i)) {
-    if (S.mode !== 'explore') setMode('explore');
-    ensureShown(i);
-  }
-  net.selectNodes([i]); net.focus(i, { scale: 1.1, animation: { duration: 400 } }); selectGene(i);
+function focusGene(i) { // breadcrumb: look at a gene that is already on screen (the centre gene re-centres the whole network)
+  if (S.mode !== 'explore' || !S.shown.has(i)) { showEgo(i); return; }
+  selectGene(i);
+  if (i === S.root) { S.userMoved = false; recentre(450); } else { S.userMoved = true; centreOn(i, 450); }
 }
 function partnerRows(i, ds) {
   const rows = [];
@@ -447,6 +595,8 @@ function showGene(i) {
   let h = `<button class="close" onclick="closePanel()">✕</button><h2>${esc(G.sym[i])}</h2><div class="sub">${esc(G.key[i])}${G.rwe[i] ? ' · RWE' : ''}</div>`;
   if (G.rwe[i]) h += `<div class="sub">${t('family')}: ${esc(D.dict.fam[G.fam[i]] || '—')} · ${t('role')}: ${esc(lab('role', D.dict.role[G.role[i]] || '—'))}${c && c.mods ? ' · ' + t('mods') + ': ' + esc(c.mods) : ''}</div>`;
   else h += `<div class="sub">${t('category')}: ${esc(lab('cat', D.dict.cat[G.cat[i]] || ''))}</div>`;
+  const isRoot = S.mode === 'explore' && S.root === i, onScreen = S.mode === 'explore' && S.shown.has(i);
+  h += `<div class="btnrow">${isRoot ? '' : `<button class="iconbtn" id="egoBtn">${t('centre')}</button>`}${onScreen ? `<button class="iconbtn" id="expBtn">${t('expand')}</button>` : ''}</div>`;
   if (c && c.caveat) h += `<div class="note">${t('caveat')}: ${esc(c.caveat)}</div>`;
   h += `<table class="kv"><tr><th></th><th class="ng">NextGen (n=${D.meta.n.NextGen})</th><th class="d2">DepMap 2D (n=${D.meta.n.DepMap2D})</th></tr>
     <tr><td>${t('class')}</td><td>${cls(G.cng[i])}</td><td>${cls(G.c2d[i])}</td></tr><tr><td>${t('mean')}</td><td>${fmt(G.mng[i])}</td><td>${fmt(G.m2d[i])}</td></tr>
@@ -468,14 +618,14 @@ function showGene(i) {
   if (G.infam[i]) {
     h += `<h3>${t('partners')} <span class="hint">(${t('select_edge')})</span></h3><div class="tabs"><button data-ds="NextGen" class="on">NextGen (${G.dng[i]})</button><button data-ds="DepMap2D">DepMap 2D (${G.d2d[i]})</button></div><div id="plist"></div>`;
   }
-  h += `<div class="btnrow"><button class="iconbtn" id="expBtn">${t('expand')}</button></div>`;
   openPanel(h);
   const list = (ds) => { const rows = partnerRows(i, ds).slice(0, 200);
     $('plist').innerHTML = `<table class="list"><tr><th>${S.lang === 'zh' ? '伙伴' : 'partner'}</th><th class="ng">r NextGen</th><th class="d2">r 2D</th><th>${t('cls_label')}</th></tr>` +
       rows.map((x) => `<tr class="pick" data-e="${x.e}"><td>${esc(G.sym[x.j])}${G.rwe[x.j] ? ' ·RWE' : ''}</td><td>${fmt(E.rng[x.e] / 100)}</td><td>${fmt(E.r2d[x.e] / 100)}</td><td>${classPill(x.e)}</td></tr>`).join('') + '</table>';
     $('plist').querySelectorAll('tr[data-e]').forEach((tr) => tr.addEventListener('click', () => showEdge(+tr.dataset.e))); };
   if (G.infam[i]) { list('NextGen'); $('panel').querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => { $('panel').querySelectorAll('.tabs button').forEach((x) => x.classList.toggle('on', x === b)); list(b.dataset.ds); })); }
-  $('expBtn').addEventListener('click', () => { if (S.mode !== 'explore') setMode('explore'); if (!S.shown.has(i)) focusGene(i); expand(i); });
+  $('egoBtn')?.addEventListener('click', () => showEgo(i));
+  $('expBtn')?.addEventListener('click', () => { $('expBtn').disabled = true; expand(i); });
   drawStrip(i);
 }
 function classPill(e) { const c = edgeClass(e); return c ? `<span class="pill ${c}">${t('c_' + c)}</span>` : ''; }
@@ -611,8 +761,9 @@ function scatterSVG(x, y, ds, xl, yl) {
 }
 
 // ------------------------------------------------------------------------------------------------ panel, about
-function openPanel(html) { const p = $('panel'); p.innerHTML = html; p.style.display = 'block'; p.scrollTop = 0; }
-function closePanel() { $('panel').style.display = 'none'; S.selected = null; refreshLabels(); }
+function openPanel(html) { const p = $('panel'), was = p.style.display === 'block'; p.innerHTML = html; p.style.display = 'block'; p.scrollTop = 0; if (!was) panelMoved(); }
+function closePanel() { const was = $('panel').style.display === 'block'; $('panel').style.display = 'none'; S.selected = null; refreshLabels(); if (was) panelMoved(); }
+function panelMoved() { if (S.mode === 'explore' && !S.userMoved && !anim) recentre(350); } // keep the centre gene in the middle of the uncovered canvas
 window.closePanel = closePanel;
 function aboutHTML() {
   const zh = S.lang === 'zh';
@@ -637,31 +788,34 @@ DepMap portal, Broad Institute: https://depmap.org (file set "NextGen Model Manu
 }
 
 // ------------------------------------------------------------------------------------------------ controls
-function setDataset(ds) { S.ds = ds; document.querySelectorAll('#dsSeg button').forEach((b) => b.classList.toggle('on', b.dataset.v === ds)); if (S.mode === 'explore') rebuildExplore(); else render(); }
+function refilter() { // dataset or filters changed: the explored network is re-derived (partners follow the new calls), other views redrawn
+  if (S.mode === 'explore' && S.root != null) { buildEgo(true, false); updateLegend(); } else render();
+}
+function setDataset(ds) { S.ds = ds; syncSeg('dsSeg', ds); writeHash(); refilter(); }
 function setMode(m) {
-  S.mode = m; document.querySelectorAll('#modeSeg button').forEach((b) => b.classList.toggle('on', b.dataset.v === m));
+  S.mode = m; syncSeg('modeSeg', m);
   $('modLevelRow').style.display = m === 'modules' ? '' : 'none';
   $('modeHelp').textContent = t(m + '_help');
-  if (m === 'explore') { S.shown = new Set(); S.history = []; }
-  render(); if (m !== 'modules') setTimeout(() => net.fit({ animation: false }), 50);
-}
-function rebuildExplore() { // keep the explored genes, refresh edges with the current filters / dataset
-  const pos = net.getPositions(); nodesDS.clear(); edgesDS.clear();
-  nodesDS.add([...S.shown].map((i) => nodeObj(i, pos[i]?.x ?? 0, pos[i]?.y ?? 0)));
-  edgesDS.add(inducedEdges(S.shown).map(edgeObj)); updateCounts(); updateLegend();
+  render();
+  if (m === 'overview') { const v = fitView(posMap()); if (v) animateTo(null, null, v, 0); }
+  writeHash();
 }
 function onFilter() {
   S.rmin = +$('rmin').value; $('rminVal').textContent = S.rmin.toFixed(2);
   S.pos = $('pos').checked; S.neg = $('neg').checked; S.rweOnly = $('rweOnly').checked; S.hideLib = $('hideLib').checked;
   S.cls = { both: $('cBoth').checked, ng: $('cNg').checked, d2: $('c2d').checked };
-  if (S.mode === 'explore') rebuildExplore(); else render();
+  refilter();
+}
+function searchGene() {
+  const q = $('search').value.trim(), i = SYM.get(q.toUpperCase());
+  $('searchMsg').textContent = q && i == null ? t('not_found', q) : '';
+  if (i != null) { showEgo(i); $('search').blur(); }
 }
 function lineagePairList() {
   $('lpList').innerHTML = `<table class="list">` + LP.slice(0, 60).map((x, k) => `<tr class="pick" data-k="${k}"><td>${esc(G.sym[x.a])}–${esc(G.sym[x.b])}</td><td><span class="sw" style="background:${D.dict.lcol[D.dict.lineage.indexOf(x.lin)]}"></span>${esc(lab('lineage', x.lin))}</td><td>${fmt(x.r)}</td></tr>`).join('') + '</table>';
   $('lpList').querySelectorAll('tr[data-k]').forEach((tr) => tr.addEventListener('click', () => {
-    const x = LP[+tr.dataset.k]; if (S.ds === 'DepMap2D') setDataset('NextGen'); if (S.mode !== 'explore') setMode('explore');
-    [x.a, x.b].forEach((i) => { if (!S.shown.has(i)) { S.shown.add(i); nodesDS.add(nodeObj(i, Math.random() * 200, Math.random() * 200)); } });
-    rebuildExplore(); net.focus(x.a, { scale: 1, animation: { duration: 300 } }); if (x.e != null) showEdge(x.e);
+    const x = LP[+tr.dataset.k]; if (S.ds === 'DepMap2D') { S.ds = 'NextGen'; syncSeg('dsSeg', S.ds); }
+    showEgo(x.a, [x.b]); if (x.e != null) showEdge(x.e);
   }));
 }
 function bind() {
@@ -671,22 +825,27 @@ function bind() {
   document.querySelectorAll('#modLevel button').forEach((b) => b.addEventListener('click', () => { S.modLevel = b.dataset.v; document.querySelectorAll('#modLevel button').forEach((x) => x.classList.toggle('on', x === b)); if (S.mode === 'modules') render(); }));
   ['rmin', 'pos', 'neg', 'rweOnly', 'hideLib', 'cBoth', 'cNg', 'c2d'].forEach((id) => $(id).addEventListener('change', onFilter));
   $('maxExp').addEventListener('input', () => { S.maxExpand = +$('maxExp').value; $('maxExpVal').textContent = S.maxExpand; });
+  $('maxExp').addEventListener('change', () => { if (S.mode === 'explore' && S.root != null) buildEgo(true, false); });
   $('rmin').addEventListener('input', () => { $('rminVal').textContent = (+$('rmin').value).toFixed(2); });
-  $('labelSize').addEventListener('change', () => { S.labelSize = +$('labelSize').value; if (S.mode === 'explore') rebuildExplore(); else render(); });
+  $('labelSize').addEventListener('change', () => { S.labelSize = +$('labelSize').value; restyle(); });
   $('edgeLabels').addEventListener('change', () => { S.edgeLabels = $('edgeLabels').checked; edgesDS.update(edgesDS.getIds().filter((id) => String(id).startsWith('e')).map((id) => edgeObj(+String(id).slice(1)))); });
-  $('lpHalo').addEventListener('change', () => { S.lpHalo = $('lpHalo').checked; edgesDS.update(edgesDS.getIds().filter((id) => String(id).startsWith('e')).map((id) => edgeObj(+String(id).slice(1)))); });
+  $('lpHalo').addEventListener('change', () => { S.lpHalo = $('lpHalo').checked; refilter(); });
   $('undoBtn').addEventListener('click', undo);
-  $('resetBtn').addEventListener('click', () => { closePanel(); if (S.mode === 'explore') { S.shown = new Set(); S.history = []; } render(); setTimeout(() => net.fit(), 50); });
-  $('fitBtn').addEventListener('click', () => net.fit({ animation: { duration: 300 } }));
-  $('layoutBtn').addEventListener('click', () => { if (S.mode === 'explore') relax(200); });
+  $('resetBtn').addEventListener('click', () => { if (S.mode === 'explore') resetEgo(); else { closePanel(); setMode(S.mode); } });
+  $('fitBtn').addEventListener('click', () => { finishAnim(); if (S.mode === 'explore') { S.userMoved = false; recentre(400); } else { const v = fitView(posMap()); if (v) animateTo(null, null, v, 400); } });
+  $('layoutBtn').addEventListener('click', () => { if (S.mode === 'explore' && S.root != null) { S.userMoved = false; buildEgo(true, true); } });
   $('pngBtn').addEventListener('click', () => { const c = net.canvas.frame.canvas, a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = `visrwe_${S.mode}_${S.ds}.png`; a.click(); });
   $('themeBtn').addEventListener('click', () => { const r = document.documentElement, dark = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-    r.dataset.theme = dark ? 'light' : 'dark'; store.set('theme', r.dataset.theme); readColours(); if (S.mode === 'explore') rebuildExplore(); else render(); });
-  $('langBtn').addEventListener('click', () => { S.lang = S.lang === 'zh' ? 'en' : 'zh'; store.set('lang', S.lang); applyI18n(); updateLegend(); updateCounts(); updateCrumbs(); lineagePairList(); if ($('about').style.display === 'flex') $('aboutBox').innerHTML = aboutHTML(); closePanel(); });
+    r.dataset.theme = dark ? 'light' : 'dark'; store.set('theme', r.dataset.theme); readColours(); restyle(); });
+  $('langBtn').addEventListener('click', () => { S.lang = S.lang === 'zh' ? 'en' : 'zh'; store.set('lang', S.lang); applyI18n(); updateLegend(); updateCounts(); updateCrumbs(); updateEgoBar(); lineagePairList(); if ($('about').style.display === 'flex') $('aboutBox').innerHTML = aboutHTML(); closePanel(); });
   $('aboutBtn').addEventListener('click', () => { $('aboutBox').innerHTML = aboutHTML(); $('about').style.display = 'flex'; });
   $('about').addEventListener('click', (ev) => { if (ev.target === $('about')) $('about').style.display = 'none'; });
-  $('search').addEventListener('change', () => { const i = SYM.get($('search').value.trim().toUpperCase()); if (i != null) { if (S.mode === 'explore') { focusGene(i); expand(i); } else if (nodesDS.get(i)) focusGene(i); else { setMode('explore'); focusGene(i); expand(i); } } });
-  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') { closePanel(); $('about').style.display = 'none'; } if ((ev.ctrlKey || ev.metaKey) && ev.key === 'z' && S.mode === 'explore') undo(); });
+  $('search').addEventListener('change', searchGene);
+  $('search').addEventListener('keydown', (ev) => { if (ev.key === 'Enter') searchGene(); });
+  $('empty').querySelectorAll('[data-g]').forEach((el) => el.addEventListener('click', () => { const i = SYM.get(el.dataset.g); if (i != null) showEgo(i); }));
+  $('emptyOverview').addEventListener('click', () => setMode('overview'));
+  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') { closePanel(); $('about').style.display = 'none'; }
+    if ((ev.ctrlKey || ev.metaKey) && ev.key === 'z' && S.mode === 'explore' && !/^(INPUT|TEXTAREA)$/.test(ev.target.tagName)) undo(); });
 }
 
 // ------------------------------------------------------------------------------------------------ start
@@ -701,12 +860,10 @@ function start() {
   createNetwork(); lineagePairList();
   const h = new URLSearchParams(location.hash.slice(1));
   if (['NextGen', 'DepMap2D', 'compare'].includes(h.get('ds'))) S.ds = h.get('ds');
-  document.querySelectorAll('#dsSeg button').forEach((b) => b.classList.toggle('on', b.dataset.v === S.ds));
-  document.querySelectorAll('#modeSeg button').forEach((b) => b.classList.toggle('on', b.dataset.v === S.mode));
+  syncSeg('dsSeg', S.ds); syncSeg('modeSeg', S.mode);
   render();
   $('loading').style.display = 'none';
-  setTimeout(() => net.fit({ animation: false }), 30);
-  const g = h.get('gene') && SYM.get(h.get('gene').toUpperCase()); if (g != null) setTimeout(() => { focusGene(g); expand(g); }, 80);
+  const g = h.get('gene') && SYM.get(h.get('gene').toUpperCase()); if (g != null) showEgo(g); // otherwise: empty canvas asking for a gene
   if (typeof DecompressionStream !== 'undefined') { vectors('NextGen'); vectors('DepMap2D'); }
   window.__ready = true;
 }
