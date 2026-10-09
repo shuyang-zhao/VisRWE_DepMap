@@ -242,11 +242,11 @@ const I18N = {
     hide_lib: '隐藏 2D 文库敏感基因的边', classes: '对比类别', c_both: '两边都显著', c_ng: '仅 NextGen', c_2d: '仅 DepMap 2D',
     display: '显示', labels: '标签', l_auto: '自动', l_all: '全部', l_none: '无', label_size: '字号', edge_labels: '边上显示 r',
     lineage_pairs: '谱系限定强关联（NextGen）', show_lp: '光晕标出',
-    explore_help: '输入一个基因：先只显示它本身，固定在中心。点击它展开第一层显著伙伴（越靠近中心 |r| 越大），再点击伙伴一级一级向外扩展；悬停：灰色虚线预览将加入的伙伴；点击灰色节点：只加入该节点；Shift+点击：收起。',
+    explore_help: '输入一个基因：先只显示它本身，固定在中心。点击它展开第一层显著伙伴（越靠近中心 |r| 越大），再点击伙伴一级一级向外扩展；再次点击已展开的节点：把它展开出的部分收回。悬停：灰色虚线预览将加入的伙伴；点击灰色节点：只加入该节点。',
     overview_help: '当前数据集中所有 RWE 相关的显著共依赖（预先计算的布局）。点击节点：移到中间并打开详情；搜索基因会切换到以它为中心的探索视图。',
-    empty_title: '输入一个基因，查看它的共依赖网络', empty_body: '先只显示这个基因本身；点击它展开第一层显著伙伴，再点击伙伴一级一级向外扩展，悬停可以预览。',
+    empty_title: '输入一个基因，查看它的共依赖网络', empty_body: '先只显示这个基因本身；点击它展开第一层显著伙伴，再点击伙伴一级一级向外扩展，再次点击已展开的节点可以收回；悬停可以预览。',
     empty_try: '例如', empty_overview: '或查看全部 RWE 共依赖（总览）', not_found: (q) => `页面数据中没有 “${q}”`,
-    ego_bar: (g, ds, n, tot) => `${g} 的共依赖网络 · ${ds} · 显示 ${n} / ${tot} 个显著伙伴`, ego_more: '点击中心基因加入更多', ego_start: '点击它展开第一层伙伴（悬停预览）',
+    ego_bar: (g, ds, n, tot) => `${g} 的共依赖网络 · ${ds} · 显示 ${n} / ${tot} 个显著伙伴`, ego_more: '详情卡中的“展开伙伴”可加入更多', ego_start: '点击它展开第一层伙伴（悬停预览）',
     ego_none: (g, ds) => `${g} 在 ${ds} 中（当前过滤条件下）没有显著伙伴`, centre: '以它为中心', node_root: '大节点、黑边 = 中心基因；离中心越近 |r| 越大',
     modules_help: '热图：每个 RWE 基因正相关最强的 100 个伙伴中，各功能模块是否过表达（超几何检验，原文口径；每个数据集一次 BH）。可切换粗分类或 Reactome / CORUM 细模块。点击基因名看详情。',
     mod_level: '模块层级', lvl_cat: '粗分类', lvl_pw: 'Reactome / CORUM',
@@ -267,7 +267,7 @@ const I18N = {
     lib_flag: '2D 文库敏感（KY vs Avana 差异大），2D 边需谨慎', caveat: '解释警示', mods: '修饰', subs: '底物',
     more_dep_org: '在类器官中更依赖', less_dep_org: '在类器官中更不依赖', essential_dropped: '两组都是必需基因（原文排除）',
     pooled: '全部筛选', within: '谱系内（扣除均值）', between: '谱系均值之间', het: '异质性 Q 检验 P',
-    shift_hint: 'Shift+点击节点：收起它展开的伙伴', library_check: '文库检查',
+    shift_hint: '再次点击已展开的节点：收回它展开出的部分', tip_collapse: '再次点击：收回它展开出的部分', tip_expand: '点击展开它的伙伴', library_check: '文库检查',
     c12_note: '36 个用 NextGen 同款 Cas12a（Humagne-CD）文库筛选的传统 2D 细胞系。如果一个"仅 NextGen"的关联在这里也出现，它更可能与文库有关，而不是 3D 培养。',
   },
   en: {
@@ -279,11 +279,11 @@ const I18N = {
     hide_lib: 'Hide edges of 2D library-sensitive genes', classes: 'Comparison class', c_both: 'called in both', c_ng: 'NextGen only', c_2d: 'DepMap 2D only',
     display: 'Display', labels: 'Labels', l_auto: 'auto', l_all: 'all', l_none: 'none', label_size: 'Size', edge_labels: 'show r on edges',
     lineage_pairs: 'Lineage-restricted pairs (NextGen)', show_lp: 'halo',
-    explore_help: 'Enter a gene: it is shown alone, fixed at the centre. Click it to add its called partners (closer = larger |r|), then click partners to grow the network outwards level by level. Hover: grey dashed preview of what a click would add. Click a grey node: add only that node. Shift+click: collapse.',
+    explore_help: 'Enter a gene: it is shown alone, fixed at the centre. Click it to add its called partners (closer = larger |r|), then click partners to grow the network outwards level by level; click an expanded node again to fold its branch back in. Hover: grey dashed preview of what a click would add. Click a grey node: add only that node.',
     overview_help: 'All called co-dependencies involving an RWE gene in the current dataset (pre-computed layout). Click a node to bring it to the middle and open its details; searching a gene switches to its own network.',
-    empty_title: 'Enter a gene to see its co-dependency network', empty_body: 'The gene is shown alone at first; click it to add its called partners, then click partners to grow the network level by level. Hover to preview.',
+    empty_title: 'Enter a gene to see its co-dependency network', empty_body: 'The gene is shown alone at first; click it to add its called partners, then click partners to grow the network level by level; click an expanded node again to fold it back. Hover to preview.',
     empty_try: 'e.g.', empty_overview: 'or browse all RWE co-dependencies (Overview)', not_found: (q) => `"${q}" is not in the page data`,
-    ego_bar: (g, ds, n, tot) => `${g} co-dependency network · ${ds} · ${n} / ${tot} called partners shown`, ego_more: 'click the centre gene for more', ego_start: 'click it to add the first level (hover to preview)',
+    ego_bar: (g, ds, n, tot) => `${g} co-dependency network · ${ds} · ${n} / ${tot} called partners shown`, ego_more: 'use "Expand partners" in the card for more', ego_start: 'click it to add the first level (hover to preview)',
     ego_none: (g, ds) => `${g} has no called partners in ${ds} under the current filters`, centre: 'Centre on this gene', node_root: 'large node with dark outline = centre gene; closer to it = larger |r|',
     modules_help: 'Heat map: over-representation of each module among the 100 most positively correlated partners of each RWE gene (hypergeometric, as in the paper; one BH per dataset). Switch between broad categories and Reactome / CORUM modules. Click a gene name for details.',
     mod_level: 'Module level', lvl_cat: 'categories', lvl_pw: 'Reactome / CORUM',
@@ -303,7 +303,7 @@ const I18N = {
     lib_flag: '2D library-sensitive (large KY vs Avana difference) – interpret 2D edges with care', caveat: 'Caveat', mods: 'Modifications', subs: 'Substrates',
     more_dep_org: 'more dependent in organoids', less_dep_org: 'less dependent in organoids', essential_dropped: 'essential in both groups (excluded in the paper)',
     pooled: 'all screens', within: 'within lineages', between: 'between lineage means', het: 'heterogeneity Q-test P',
-    shift_hint: 'Shift+click a node to collapse its partners', library_check: 'library check',
+    shift_hint: 'click an expanded node again to fold its branch back in', tip_collapse: 'click again to fold this branch back in', tip_expand: 'click to add its partners', library_check: 'library check',
     c12_note: '36 traditional 2D lines screened with the same Cas12a (Humagne-CD) library as NextGen. A NextGen-only pair that is also present here is more likely library-related than 3D-specific.',
   },
 };
@@ -536,10 +536,10 @@ function fitView(pos) { // bounding-box fit (overview)
   return { pos: { x: (x0 + x1) / 2, y: (y0 + y1) / 2 }, off: v.off, scale: Math.min(1.2, Math.max(0.02, Math.min((v.W - 60) / (x1 - x0 + 60), (v.H - 60) / (y1 - y0 + 60)))) };
 }
 let anim = null;
-function animateTo(target, start, view, ms) { // target/start: Map id -> {x, y}; view: {pos, scale, off} or null (camera stays)
+function animateTo(target, start, view, ms, done) { // target/start: Map id -> {x, y}; view: {pos, scale, off} or null (camera stays); done: called once at the end
   finishAnim();
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) ms = 0;
-  const B = net.body.nodes, t0 = performance.now(), me = { target, raf: 0 }, cv = net.canvas.frame.canvas;
+  const B = net.body.nodes, t0 = performance.now(), me = { target, raf: 0, done }, cv = net.canvas.frame.canvas;
   // start = the canvas point now under the target's screen anchor, so a gene that is already at the anchor stays put while the scale changes
   const v0 = view && { pos: net.DOMtoCanvas({ x: cv.clientWidth / 2 + view.off, y: cv.clientHeight / 2 }), scale: net.getScale() };
   const ease = (u) => 1 - (1 - u) ** 3;
@@ -549,7 +549,9 @@ function animateTo(target, start, view, ms) { // target/start: Map id -> {x, y};
     if (view) net.moveTo({ position: { x: v0.pos.x + (view.pos.x - v0.pos.x) * k, y: v0.pos.y + (view.pos.y - v0.pos.y) * k },
       scale: v0.scale + (view.scale - v0.scale) * k, offset: { x: view.off, y: 0 }, animation: false });
     net.redraw();
-    if (u < 1) me.raf = requestAnimationFrame(frame); else if (anim === me) anim = null;
+    if (u < 1) { me.raf = requestAnimationFrame(frame); return; }
+    if (anim === me) anim = null;
+    const d = me.done; me.done = null; if (d) d();
   };
   anim = me;
   if (ms) me.raf = requestAnimationFrame(frame); else frame(t0);
@@ -558,6 +560,7 @@ function finishAnim() { // jump a running animation to its final node positions;
   if (!anim) return;
   const a = anim; anim = null; cancelAnimationFrame(a.raf);
   if (a.target) { for (const [id, b] of a.target) { const n = net.body.nodes[id]; if (n) { n.x = b.x; n.y = b.y; } } net.redraw(); }
+  const d = a.done; a.done = null; if (d) d();
 }
 function recentre(ms) { if (S.mode === 'explore' && S.root != null) animateTo(null, null, egoView(posMap()), ms); }
 function centreOn(i, ms) { const p = net.getPositions([i])[i]; if (p) animateTo(null, null, { pos: p, scale: Math.max(net.getScale(), 0.8), off: viewBox().off }, ms); }
@@ -683,27 +686,40 @@ function expand(i) {
   addGenes(add, placeAround(i, add), i);
   updateCrumbs();
 }
-function removeGenes(list) {
-  finishAnim();
+const isExpanded = (i) => S.history.slice(S.baseLen).some((h) => h.node === i && h.added.some((j) => S.shown.has(j)));
+function retract(list, into) { // fold genes back into the node they grew from, then drop them; the view refits what is left
+  finishAnim(); clearGhosts();
   const rm = list.filter((j) => S.shown.has(j) && j !== S.root);
+  if (!rm.length) return;
+  const P = posMap(), c = P.get(into) || P.get(S.root) || { x: 0, y: 0 };
   rm.forEach((j) => S.shown.delete(j));
-  nodesDS.remove(rm);
-  const dead = edgesDS.getIds().filter((id) => { const e = +String(id).slice(1); return String(id)[0] === 'e' && (!S.shown.has(E.a[e]) || !S.shown.has(E.b[e])); });
-  edgesDS.remove(dead);
-  refreshLabels(); updateCounts(); updateCrumbs(); updateEgoBar();
+  const rest = new Map([...P].filter(([j]) => S.shown.has(j)));
+  animateTo(new Map(rm.map((j) => [j, { x: c.x, y: c.y }])), new Map(rm.map((j) => [j, P.get(j) || c])), S.userMoved ? null : egoView(rest), 380, () => {
+    nodesDS.remove(rm);
+    edgesDS.remove(edgesDS.getIds().filter((id) => { const e = +String(id).slice(1); return String(id)[0] === 'e' && (!S.shown.has(E.a[e]) || !S.shown.has(E.b[e])); }));
+    refreshLabels(); updateCounts();
+  });
+  updateCrumbs(); updateEgoBar();
 }
-function collapse(i) { // remove everything that was grown out of node i (its expansions and their descendants)
-  if (i === S.root) { resetEgo(); return; }
-  const drop = new Set([i]), gone = new Set();
-  for (let grew = true; grew;) { grew = false; for (const h of S.history.slice(S.baseLen)) if (drop.has(h.node)) for (const j of h.added) if (!gone.has(j)) { gone.add(j); drop.add(j); grew = true; } }
-  S.history = S.history.filter((h, k) => k < S.baseLen || !drop.has(h.node));
-  const still = new Set(S.history.flatMap((h) => h.added));
-  removeGenes([...gone].filter((j) => !still.has(j)));
+function collapse(i) { // fold back everything grown out of node i (its expansions and their descendants); for the centre gene: all of it
+  let gone;
+  if (i === S.root) {
+    const keep = new Set([S.root, ...S.history.slice(0, S.baseLen).flatMap((h) => h.added)]);
+    S.history = S.history.slice(0, S.baseLen);
+    gone = [...S.shown].filter((j) => !keep.has(j));
+  } else {
+    const drop = new Set([i]), out = new Set();
+    for (let grew = true; grew;) { grew = false; for (const h of S.history.slice(S.baseLen)) if (drop.has(h.node)) for (const j of h.added) if (!out.has(j)) { out.add(j); drop.add(j); grew = true; } }
+    S.history = S.history.filter((h, k) => k < S.baseLen || !drop.has(h.node));
+    const still = new Set(S.history.flatMap((h) => h.added));
+    gone = [...out].filter((j) => !still.has(j));
+  }
+  retract(gone, i);
 }
 function undo() {
   if (S.mode !== 'explore' || S.history.length <= S.baseLen) return;
   const h = S.history.pop(), still = new Set(S.history.flatMap((x) => x.added));
-  removeGenes(h.added.filter((j) => !still.has(j)));
+  retract(h.added.filter((j) => !still.has(j)), h.node);
 }
 function resetEgo() { if (S.root == null) return; S.history = S.history.slice(0, S.baseLen); S.userMoved = false; buildEgo(true, true); }
 
@@ -863,7 +879,9 @@ function geneTip(i, ghost) {
     <tr><td>${t('mean')}</td><td>${fmt(G.mng[i])}</td><td>${fmt(G.m2d[i])}</td></tr>
     <tr><td>${t('frac_dep')}</td><td>${pct(G.fng[i])}</td><td>${pct(G.f2d[i])}</td></tr>
     <tr><td>${t('n_partners')}</td><td>${G.infam[i] ? G.dng[i] : '—'}</td><td>${G.infam[i] ? G.d2d[i] : '—'}</td></tr></table>
-    ${ghost ? '<span class="k">' + (S.lang === 'zh' ? '点击加入网络' : 'click to add') + '</span>' : ''}`;
+    ${ghost ? '<span class="k">' + (S.lang === 'zh' ? '点击加入网络' : 'click to add') + '</span>'
+    : S.mode !== 'explore' || !S.shown.has(i) ? '' : isExpanded(i) ? `<span class="k">${t('tip_collapse')}</span>`
+    : visibleNeighbours(i).some((x) => !S.shown.has(x.j)) ? `<span class="k">${t('tip_expand')}</span>` : ''}`;
 }
 function edgeTip(e) {
   const call = (bit) => (E.f[e] & bit ? `<span class="pill ${bit === 1 ? 'ng' : 'd2'}">${t('called')}</span>` : t('not_called'));
@@ -875,7 +893,7 @@ function onHoverNode(id, ev) {
   if (typeof id === 'string' && id.startsWith('g')) { clearTimeout(ghostTimer); showTip(geneTip(+id.slice(1), true), ev); return; }
   if (typeof id === 'string') return;
   S.hoverNode = id; showTip(geneTip(id, false), ev);
-  if (S.mode === 'explore') { clearTimeout(ghostTimer); ghostTimer = setTimeout(() => showGhosts(id), 120); }
+  if (S.mode === 'explore') { clearTimeout(ghostTimer); ghostTimer = setTimeout(() => (isExpanded(id) ? clearGhosts() : showGhosts(id)), 120); }
 }
 function onBlurNode() {
   hideTip(); S.hoverNode = null;
@@ -887,11 +905,16 @@ function onHoverEdge(id, pointer) {
 }
 function onClick(p) {
   hideTip();
-  const id = p.nodes[0];
+  let id = p.nodes[0];
+  if (S.mode === 'explore' && typeof id === 'number' && !S.shown.has(id)) { finishAnim(); id = net.getNodeAt(p.pointer.DOM); } // clicked a gene that is folding away: use what is underneath
   if (id != null) {
     if (typeof id === 'string' && id.startsWith('g')) { addGhost(+id.slice(1)); return; }
     if (typeof id === 'string') return;
-    if (S.mode === 'explore') { clearGhosts(); selectGene(id); if (p.event?.srcEvent?.shiftKey) collapse(id); else expand(id); return; }
+    if (S.mode === 'explore') {
+      clearGhosts(); selectGene(id); if (p.event?.srcEvent?.shiftKey || isExpanded(id)) collapse(id); else expand(id);
+      if (S.shown.has(id)) showTip(geneTip(id, false), p.pointer); // the pointer is still on the gene: say what the next click does
+      return;
+    }
     selectGene(id); if (S.mode === 'overview') centreOn(id, 450);
     return;
   }

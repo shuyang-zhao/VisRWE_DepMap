@@ -210,10 +210,10 @@ function fitView(pos) { // bounding-box fit (overview)
   return { pos: { x: (x0 + x1) / 2, y: (y0 + y1) / 2 }, off: v.off, scale: Math.min(1.2, Math.max(0.02, Math.min((v.W - 60) / (x1 - x0 + 60), (v.H - 60) / (y1 - y0 + 60)))) };
 }
 let anim = null;
-function animateTo(target, start, view, ms) { // target/start: Map id -> {x, y}; view: {pos, scale, off} or null (camera stays)
+function animateTo(target, start, view, ms, done) { // target/start: Map id -> {x, y}; view: {pos, scale, off} or null (camera stays); done: called once at the end
   finishAnim();
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) ms = 0;
-  const B = net.body.nodes, t0 = performance.now(), me = { target, raf: 0 }, cv = net.canvas.frame.canvas;
+  const B = net.body.nodes, t0 = performance.now(), me = { target, raf: 0, done }, cv = net.canvas.frame.canvas;
   // start = the canvas point now under the target's screen anchor, so a gene that is already at the anchor stays put while the scale changes
   const v0 = view && { pos: net.DOMtoCanvas({ x: cv.clientWidth / 2 + view.off, y: cv.clientHeight / 2 }), scale: net.getScale() };
   const ease = (u) => 1 - (1 - u) ** 3;
@@ -223,7 +223,9 @@ function animateTo(target, start, view, ms) { // target/start: Map id -> {x, y};
     if (view) net.moveTo({ position: { x: v0.pos.x + (view.pos.x - v0.pos.x) * k, y: v0.pos.y + (view.pos.y - v0.pos.y) * k },
       scale: v0.scale + (view.scale - v0.scale) * k, offset: { x: view.off, y: 0 }, animation: false });
     net.redraw();
-    if (u < 1) me.raf = requestAnimationFrame(frame); else if (anim === me) anim = null;
+    if (u < 1) { me.raf = requestAnimationFrame(frame); return; }
+    if (anim === me) anim = null;
+    const d = me.done; me.done = null; if (d) d();
   };
   anim = me;
   if (ms) me.raf = requestAnimationFrame(frame); else frame(t0);
@@ -232,6 +234,7 @@ function finishAnim() { // jump a running animation to its final node positions;
   if (!anim) return;
   const a = anim; anim = null; cancelAnimationFrame(a.raf);
   if (a.target) { for (const [id, b] of a.target) { const n = net.body.nodes[id]; if (n) { n.x = b.x; n.y = b.y; } } net.redraw(); }
+  const d = a.done; a.done = null; if (d) d();
 }
 function recentre(ms) { if (S.mode === 'explore' && S.root != null) animateTo(null, null, egoView(posMap()), ms); }
 function centreOn(i, ms) { const p = net.getPositions([i])[i]; if (p) animateTo(null, null, { pos: p, scale: Math.max(net.getScale(), 0.8), off: viewBox().off }, ms); }
@@ -357,27 +360,40 @@ function expand(i) {
   addGenes(add, placeAround(i, add), i);
   updateCrumbs();
 }
-function removeGenes(list) {
-  finishAnim();
+const isExpanded = (i) => S.history.slice(S.baseLen).some((h) => h.node === i && h.added.some((j) => S.shown.has(j)));
+function retract(list, into) { // fold genes back into the node they grew from, then drop them; the view refits what is left
+  finishAnim(); clearGhosts();
   const rm = list.filter((j) => S.shown.has(j) && j !== S.root);
+  if (!rm.length) return;
+  const P = posMap(), c = P.get(into) || P.get(S.root) || { x: 0, y: 0 };
   rm.forEach((j) => S.shown.delete(j));
-  nodesDS.remove(rm);
-  const dead = edgesDS.getIds().filter((id) => { const e = +String(id).slice(1); return String(id)[0] === 'e' && (!S.shown.has(E.a[e]) || !S.shown.has(E.b[e])); });
-  edgesDS.remove(dead);
-  refreshLabels(); updateCounts(); updateCrumbs(); updateEgoBar();
+  const rest = new Map([...P].filter(([j]) => S.shown.has(j)));
+  animateTo(new Map(rm.map((j) => [j, { x: c.x, y: c.y }])), new Map(rm.map((j) => [j, P.get(j) || c])), S.userMoved ? null : egoView(rest), 380, () => {
+    nodesDS.remove(rm);
+    edgesDS.remove(edgesDS.getIds().filter((id) => { const e = +String(id).slice(1); return String(id)[0] === 'e' && (!S.shown.has(E.a[e]) || !S.shown.has(E.b[e])); }));
+    refreshLabels(); updateCounts();
+  });
+  updateCrumbs(); updateEgoBar();
 }
-function collapse(i) { // remove everything that was grown out of node i (its expansions and their descendants)
-  if (i === S.root) { resetEgo(); return; }
-  const drop = new Set([i]), gone = new Set();
-  for (let grew = true; grew;) { grew = false; for (const h of S.history.slice(S.baseLen)) if (drop.has(h.node)) for (const j of h.added) if (!gone.has(j)) { gone.add(j); drop.add(j); grew = true; } }
-  S.history = S.history.filter((h, k) => k < S.baseLen || !drop.has(h.node));
-  const still = new Set(S.history.flatMap((h) => h.added));
-  removeGenes([...gone].filter((j) => !still.has(j)));
+function collapse(i) { // fold back everything grown out of node i (its expansions and their descendants); for the centre gene: all of it
+  let gone;
+  if (i === S.root) {
+    const keep = new Set([S.root, ...S.history.slice(0, S.baseLen).flatMap((h) => h.added)]);
+    S.history = S.history.slice(0, S.baseLen);
+    gone = [...S.shown].filter((j) => !keep.has(j));
+  } else {
+    const drop = new Set([i]), out = new Set();
+    for (let grew = true; grew;) { grew = false; for (const h of S.history.slice(S.baseLen)) if (drop.has(h.node)) for (const j of h.added) if (!out.has(j)) { out.add(j); drop.add(j); grew = true; } }
+    S.history = S.history.filter((h, k) => k < S.baseLen || !drop.has(h.node));
+    const still = new Set(S.history.flatMap((h) => h.added));
+    gone = [...out].filter((j) => !still.has(j));
+  }
+  retract(gone, i);
 }
 function undo() {
   if (S.mode !== 'explore' || S.history.length <= S.baseLen) return;
   const h = S.history.pop(), still = new Set(S.history.flatMap((x) => x.added));
-  removeGenes(h.added.filter((j) => !still.has(j)));
+  retract(h.added.filter((j) => !still.has(j)), h.node);
 }
 function resetEgo() { if (S.root == null) return; S.history = S.history.slice(0, S.baseLen); S.userMoved = false; buildEgo(true, true); }
 
@@ -537,7 +553,9 @@ function geneTip(i, ghost) {
     <tr><td>${t('mean')}</td><td>${fmt(G.mng[i])}</td><td>${fmt(G.m2d[i])}</td></tr>
     <tr><td>${t('frac_dep')}</td><td>${pct(G.fng[i])}</td><td>${pct(G.f2d[i])}</td></tr>
     <tr><td>${t('n_partners')}</td><td>${G.infam[i] ? G.dng[i] : '—'}</td><td>${G.infam[i] ? G.d2d[i] : '—'}</td></tr></table>
-    ${ghost ? '<span class="k">' + (S.lang === 'zh' ? '点击加入网络' : 'click to add') + '</span>' : ''}`;
+    ${ghost ? '<span class="k">' + (S.lang === 'zh' ? '点击加入网络' : 'click to add') + '</span>'
+    : S.mode !== 'explore' || !S.shown.has(i) ? '' : isExpanded(i) ? `<span class="k">${t('tip_collapse')}</span>`
+    : visibleNeighbours(i).some((x) => !S.shown.has(x.j)) ? `<span class="k">${t('tip_expand')}</span>` : ''}`;
 }
 function edgeTip(e) {
   const call = (bit) => (E.f[e] & bit ? `<span class="pill ${bit === 1 ? 'ng' : 'd2'}">${t('called')}</span>` : t('not_called'));
@@ -549,7 +567,7 @@ function onHoverNode(id, ev) {
   if (typeof id === 'string' && id.startsWith('g')) { clearTimeout(ghostTimer); showTip(geneTip(+id.slice(1), true), ev); return; }
   if (typeof id === 'string') return;
   S.hoverNode = id; showTip(geneTip(id, false), ev);
-  if (S.mode === 'explore') { clearTimeout(ghostTimer); ghostTimer = setTimeout(() => showGhosts(id), 120); }
+  if (S.mode === 'explore') { clearTimeout(ghostTimer); ghostTimer = setTimeout(() => (isExpanded(id) ? clearGhosts() : showGhosts(id)), 120); }
 }
 function onBlurNode() {
   hideTip(); S.hoverNode = null;
@@ -561,11 +579,16 @@ function onHoverEdge(id, pointer) {
 }
 function onClick(p) {
   hideTip();
-  const id = p.nodes[0];
+  let id = p.nodes[0];
+  if (S.mode === 'explore' && typeof id === 'number' && !S.shown.has(id)) { finishAnim(); id = net.getNodeAt(p.pointer.DOM); } // clicked a gene that is folding away: use what is underneath
   if (id != null) {
     if (typeof id === 'string' && id.startsWith('g')) { addGhost(+id.slice(1)); return; }
     if (typeof id === 'string') return;
-    if (S.mode === 'explore') { clearGhosts(); selectGene(id); if (p.event?.srcEvent?.shiftKey) collapse(id); else expand(id); return; }
+    if (S.mode === 'explore') {
+      clearGhosts(); selectGene(id); if (p.event?.srcEvent?.shiftKey || isExpanded(id)) collapse(id); else expand(id);
+      if (S.shown.has(id)) showTip(geneTip(id, false), p.pointer); // the pointer is still on the gene: say what the next click does
+      return;
+    }
     selectGene(id); if (S.mode === 'overview') centreOn(id, 450);
     return;
   }
