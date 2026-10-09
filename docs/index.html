@@ -242,11 +242,11 @@ const I18N = {
     hide_lib: '隐藏 2D 文库敏感基因的边', classes: '对比类别', c_both: '两边都显著', c_ng: '仅 NextGen', c_2d: '仅 DepMap 2D',
     display: '显示', labels: '标签', l_auto: '自动', l_all: '全部', l_none: '无', label_size: '字号', edge_labels: '边上显示 r',
     lineage_pairs: '谱系限定强关联（NextGen）', show_lp: '光晕标出',
-    explore_help: '输入一个基因：只显示它和它的显著伙伴，它固定在中心，越靠近中心 |r| 越大。悬停伙伴：灰色虚线预览它的下一层伙伴；点击伙伴：向外展开；点击灰色节点：只加入该节点；Shift+点击：收起。',
+    explore_help: '输入一个基因：先只显示它本身，固定在中心。点击它展开第一层显著伙伴（越靠近中心 |r| 越大），再点击伙伴一级一级向外扩展；悬停：灰色虚线预览将加入的伙伴；点击灰色节点：只加入该节点；Shift+点击：收起。',
     overview_help: '当前数据集中所有 RWE 相关的显著共依赖（预先计算的布局）。点击节点：移到中间并打开详情；搜索基因会切换到以它为中心的探索视图。',
-    empty_title: '输入一个基因，查看它的共依赖网络', empty_body: '网络以该基因为中心，只包含它的显著伙伴；悬停伙伴可预览下一层，点击伙伴向外展开。',
+    empty_title: '输入一个基因，查看它的共依赖网络', empty_body: '先只显示这个基因本身；点击它展开第一层显著伙伴，再点击伙伴一级一级向外扩展，悬停可以预览。',
     empty_try: '例如', empty_overview: '或查看全部 RWE 共依赖（总览）', not_found: (q) => `页面数据中没有 “${q}”`,
-    ego_bar: (g, ds, n, tot) => `${g} 的共依赖网络 · ${ds} · 显示 ${n} / ${tot} 个显著伙伴`, ego_more: '点击中心基因加入更多',
+    ego_bar: (g, ds, n, tot) => `${g} 的共依赖网络 · ${ds} · 显示 ${n} / ${tot} 个显著伙伴`, ego_more: '点击中心基因加入更多', ego_start: '点击它展开第一层伙伴（悬停预览）',
     ego_none: (g, ds) => `${g} 在 ${ds} 中（当前过滤条件下）没有显著伙伴`, centre: '以它为中心', node_root: '大节点、黑边 = 中心基因；离中心越近 |r| 越大',
     modules_help: '热图：每个 RWE 基因正相关最强的 100 个伙伴中，各功能模块是否过表达（超几何检验，原文口径；每个数据集一次 BH）。可切换粗分类或 Reactome / CORUM 细模块。点击基因名看详情。',
     mod_level: '模块层级', lvl_cat: '粗分类', lvl_pw: 'Reactome / CORUM',
@@ -279,11 +279,11 @@ const I18N = {
     hide_lib: 'Hide edges of 2D library-sensitive genes', classes: 'Comparison class', c_both: 'called in both', c_ng: 'NextGen only', c_2d: 'DepMap 2D only',
     display: 'Display', labels: 'Labels', l_auto: 'auto', l_all: 'all', l_none: 'none', label_size: 'Size', edge_labels: 'show r on edges',
     lineage_pairs: 'Lineage-restricted pairs (NextGen)', show_lp: 'halo',
-    explore_help: 'Enter a gene: only that gene and its called partners are shown, with the gene fixed at the centre (closer = larger |r|). Hover a partner: grey dashed preview of its own partners. Click a partner: expand outwards. Click a grey node: add only that node. Shift+click: collapse.',
+    explore_help: 'Enter a gene: it is shown alone, fixed at the centre. Click it to add its called partners (closer = larger |r|), then click partners to grow the network outwards level by level. Hover: grey dashed preview of what a click would add. Click a grey node: add only that node. Shift+click: collapse.',
     overview_help: 'All called co-dependencies involving an RWE gene in the current dataset (pre-computed layout). Click a node to bring it to the middle and open its details; searching a gene switches to its own network.',
-    empty_title: 'Enter a gene to see its co-dependency network', empty_body: 'The gene sits at the centre with only its called partners around it; hover a partner to preview the next layer, click it to expand outwards.',
+    empty_title: 'Enter a gene to see its co-dependency network', empty_body: 'The gene is shown alone at first; click it to add its called partners, then click partners to grow the network level by level. Hover to preview.',
     empty_try: 'e.g.', empty_overview: 'or browse all RWE co-dependencies (Overview)', not_found: (q) => `"${q}" is not in the page data`,
-    ego_bar: (g, ds, n, tot) => `${g} co-dependency network · ${ds} · ${n} / ${tot} called partners shown`, ego_more: 'click the centre gene for more',
+    ego_bar: (g, ds, n, tot) => `${g} co-dependency network · ${ds} · ${n} / ${tot} called partners shown`, ego_more: 'click the centre gene for more', ego_start: 'click it to add the first level (hover to preview)',
     ego_none: (g, ds) => `${g} has no called partners in ${ds} under the current filters`, centre: 'Centre on this gene', node_root: 'large node with dark outline = centre gene; closer to it = larger |r|',
     modules_help: 'Heat map: over-representation of each module among the 100 most positively correlated partners of each RWE gene (hypergeometric, as in the paper; one BH per dataset). Switch between broad categories and Reactome / CORUM modules. Click a gene name for details.',
     mod_level: 'Module level', lvl_cat: 'categories', lvl_pw: 'Reactome / CORUM',
@@ -572,7 +572,7 @@ const SPACING = 40;
 const topNew = (i) => visibleNeighbours(i).filter((x) => !S.shown.has(x.j)).slice(0, S.maxExpand).map((x) => x.j);
 function showEgo(i, extra = []) { // entry point: search, URL, "centre on this gene", lineage-pair list
   S.mode = 'explore'; syncSeg('modeSeg', 'explore'); $('modLevelRow').style.display = 'none'; $('modeHelp').textContent = t('explore_help');
-  S.root = i; S.history = [{ node: i, kind: 'expand', added: [] }]; if (extra.length) S.history.push({ node: i, kind: 'add', added: extra });
+  S.root = i; S.history = extra.length ? [{ node: i, kind: 'add', added: extra }] : []; // the gene alone; the user grows the network level by level
   S.baseLen = S.history.length; S.userMoved = false;
   $('net').style.display = ''; $('matrix').style.display = 'none'; $('empty').style.display = 'none';
   selectGene(i); writeHash();
@@ -645,10 +645,10 @@ function placeAround(i, list) { // where new partners of node i go: a fan pointi
   if (!c || !n) return out;
   const root = P.get(S.root) || { x: 0, y: 0 }, occ = [...P.values()], items = egoOrder(i, list);
   let ang, dist;
-  if (i === S.root) {
+  if (i === S.root) { // first level: the same ring as egoLayout; later rounds: an outer ring
     let maxD = 0; for (const p of occ) maxD = Math.max(maxD, Math.hypot(p.x - c.x, p.y - c.y));
-    const R = Math.max(maxD + 110, n * SPACING / (2 * Math.PI));
-    ang = (k) => -Math.PI / 2 + 2 * Math.PI * k / n; dist = (j) => R * (1 + 0.2 * (1 - strength(i, j)));
+    const first = maxD < 1, R = Math.max(first ? 170 : maxD + 110, n * SPACING / (2 * Math.PI)), band = first ? 0.45 : 0.2;
+    ang = (k) => -Math.PI / 2 + 2 * Math.PI * (k + 0.5) / n; dist = (j) => R * (1 + band * (1 - strength(i, j)));
   } else { // larger fans alternate between two staggered rows, which halves the arc they need
     const rows = n > 6 ? 2 : 1, th = Math.atan2(c.y - root.y, c.x - root.x), d0 = Math.max(100 + 1.5 * n, (n - 1) * SPACING / rows / Math.PI);
     const span = n > 1 ? Math.min(Math.PI, (n - 1) * SPACING / rows / d0) : 0;
@@ -821,7 +821,7 @@ function updateLegend() {
   $('clsRow').style.display = S.ds === 'compare' ? '' : 'none';
 }
 function updateCrumbs() {
-  const nodes = S.mode === 'explore' && S.root != null ? [...new Set(S.history.map((h) => h.node))] : [];
+  const nodes = S.mode === 'explore' && S.root != null && S.history.length ? [...new Set([S.root, ...S.history.map((h) => h.node)])] : [];
   $('crumbs').innerHTML = nodes.length ? `<span class="hint">${t('history')}:</span>` + nodes.map((i) => `<span data-g="${i}">${esc(G.sym[i])}</span>`).join('') : '';
   $('crumbs').querySelectorAll('span[data-g]').forEach((el) => el.addEventListener('click', () => focusGene(+el.dataset.g)));
   $('undoBtn').disabled = !(S.mode === 'explore' && S.history.length > S.baseLen);
@@ -831,7 +831,7 @@ function updateEgoBar() { // one line above the canvas: whose network this is an
   bar.style.display = on ? 'block' : 'none';
   if (!on) return;
   const g = `<b>${esc(G.sym[S.root])}</b>`, ds = S.ds === 'compare' ? t('ds_cmp') : dsName(S.ds), nb = visibleNeighbours(S.root), shown = nb.filter((x) => S.shown.has(x.j)).length;
-  bar.innerHTML = nb.length ? t('ego_bar', g, ds, shown, nb.length) + (shown < nb.length ? ` · <span class="k">${t('ego_more')}</span>` : '')
+  bar.innerHTML = nb.length ? t('ego_bar', g, ds, shown, nb.length) + (shown < nb.length ? ` · <span class="k">${t(shown ? 'ego_more' : 'ego_start')}</span>` : '')
     : t('ego_none', g, ds) + (G.infam[S.root] ? '' : `<br><span class="k">${t('not_dependency')}</span>`);
 }
 function restyle() { // colours, fonts and labels changed; positions stay

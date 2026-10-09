@@ -246,7 +246,7 @@ const SPACING = 40;
 const topNew = (i) => visibleNeighbours(i).filter((x) => !S.shown.has(x.j)).slice(0, S.maxExpand).map((x) => x.j);
 function showEgo(i, extra = []) { // entry point: search, URL, "centre on this gene", lineage-pair list
   S.mode = 'explore'; syncSeg('modeSeg', 'explore'); $('modLevelRow').style.display = 'none'; $('modeHelp').textContent = t('explore_help');
-  S.root = i; S.history = [{ node: i, kind: 'expand', added: [] }]; if (extra.length) S.history.push({ node: i, kind: 'add', added: extra });
+  S.root = i; S.history = extra.length ? [{ node: i, kind: 'add', added: extra }] : []; // the gene alone; the user grows the network level by level
   S.baseLen = S.history.length; S.userMoved = false;
   $('net').style.display = ''; $('matrix').style.display = 'none'; $('empty').style.display = 'none';
   selectGene(i); writeHash();
@@ -319,10 +319,10 @@ function placeAround(i, list) { // where new partners of node i go: a fan pointi
   if (!c || !n) return out;
   const root = P.get(S.root) || { x: 0, y: 0 }, occ = [...P.values()], items = egoOrder(i, list);
   let ang, dist;
-  if (i === S.root) {
+  if (i === S.root) { // first level: the same ring as egoLayout; later rounds: an outer ring
     let maxD = 0; for (const p of occ) maxD = Math.max(maxD, Math.hypot(p.x - c.x, p.y - c.y));
-    const R = Math.max(maxD + 110, n * SPACING / (2 * Math.PI));
-    ang = (k) => -Math.PI / 2 + 2 * Math.PI * k / n; dist = (j) => R * (1 + 0.2 * (1 - strength(i, j)));
+    const first = maxD < 1, R = Math.max(first ? 170 : maxD + 110, n * SPACING / (2 * Math.PI)), band = first ? 0.45 : 0.2;
+    ang = (k) => -Math.PI / 2 + 2 * Math.PI * (k + 0.5) / n; dist = (j) => R * (1 + band * (1 - strength(i, j)));
   } else { // larger fans alternate between two staggered rows, which halves the arc they need
     const rows = n > 6 ? 2 : 1, th = Math.atan2(c.y - root.y, c.x - root.x), d0 = Math.max(100 + 1.5 * n, (n - 1) * SPACING / rows / Math.PI);
     const span = n > 1 ? Math.min(Math.PI, (n - 1) * SPACING / rows / d0) : 0;
@@ -495,7 +495,7 @@ function updateLegend() {
   $('clsRow').style.display = S.ds === 'compare' ? '' : 'none';
 }
 function updateCrumbs() {
-  const nodes = S.mode === 'explore' && S.root != null ? [...new Set(S.history.map((h) => h.node))] : [];
+  const nodes = S.mode === 'explore' && S.root != null && S.history.length ? [...new Set([S.root, ...S.history.map((h) => h.node)])] : [];
   $('crumbs').innerHTML = nodes.length ? `<span class="hint">${t('history')}:</span>` + nodes.map((i) => `<span data-g="${i}">${esc(G.sym[i])}</span>`).join('') : '';
   $('crumbs').querySelectorAll('span[data-g]').forEach((el) => el.addEventListener('click', () => focusGene(+el.dataset.g)));
   $('undoBtn').disabled = !(S.mode === 'explore' && S.history.length > S.baseLen);
@@ -505,7 +505,7 @@ function updateEgoBar() { // one line above the canvas: whose network this is an
   bar.style.display = on ? 'block' : 'none';
   if (!on) return;
   const g = `<b>${esc(G.sym[S.root])}</b>`, ds = S.ds === 'compare' ? t('ds_cmp') : dsName(S.ds), nb = visibleNeighbours(S.root), shown = nb.filter((x) => S.shown.has(x.j)).length;
-  bar.innerHTML = nb.length ? t('ego_bar', g, ds, shown, nb.length) + (shown < nb.length ? ` · <span class="k">${t('ego_more')}</span>` : '')
+  bar.innerHTML = nb.length ? t('ego_bar', g, ds, shown, nb.length) + (shown < nb.length ? ` · <span class="k">${t(shown ? 'ego_more' : 'ego_start')}</span>` : '')
     : t('ego_none', g, ds) + (G.infam[S.root] ? '' : `<br><span class="k">${t('not_dependency')}</span>`);
 }
 function restyle() { // colours, fonts and labels changed; positions stay

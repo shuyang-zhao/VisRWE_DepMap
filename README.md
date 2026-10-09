@@ -16,8 +16,8 @@ CRISPR screens, side by side with the original DepMap 2D screens.
   organoid vs 2D, lineage selectivity, biomarkers.
 * **A co-dependency map of all 5,693 dependency genes**, computed the same way in both datasets (16.2 million pairs each), with every pair that
   involves an RWE gene labelled *called in both / NextGen only / DepMap 2D only*.
-* **An explorer** that starts from the gene you enter: only that gene's network is shown, with the gene fixed at the centre and its called
-  partners around it (closer = larger |r|); hover a partner to preview its own partners, click to expand outwards, open any edge to see
+* **An explorer** that starts from the gene you enter, shown alone at the centre: click it to add its called partners (closer = larger |r|),
+  then click partners to grow the network level by level (hover previews what a click adds), open any edge to see
   its lineage decomposition (forest plot and scatter plots, NextGen next to 2D, plus a Cas12a-library check), switch between NextGen, DepMap 2D
   and a comparison view, or look at functional-module enrichment as a heat map. Chinese / English interface.
 
